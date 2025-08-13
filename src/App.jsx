@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useMemo, useState, useRef } from 'react';
-import { BrowserRouter, Routes, Route, Link, useNavigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { GraduationCap, Search, Zap, TrendingUp, MapPin, DollarSign, Users, X, ChevronDown } from 'lucide-react';
 import { employerAPI } from './api';
 
@@ -382,6 +382,7 @@ function AppProvider({ children }) {
   ]);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showEmployerAuthModal, setShowEmployerAuthModal] = useState(false);
+  const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false);
   const [showXPNotification, setShowXPNotification] = useState(false);
   const [lastXPGain, setLastXPGain] = useState(0);
   
@@ -575,6 +576,8 @@ function AppProvider({ children }) {
     setShowAuthModal,
     showEmployerAuthModal,
     setShowEmployerAuthModal,
+    showForgotPasswordModal,
+    setShowForgotPasswordModal,
     showXPNotification,
     lastXPGain,
     addJobHuntXP,
@@ -665,6 +668,21 @@ function AuthModal() {
             {isSignUp ? 'Create Account' : 'Sign In'}
           </button>
         </form>
+        
+        {/* Forgot Password Link */}
+        {!isSignUp && (
+          <div className="text-center mt-4">
+            <button
+              onClick={() => {
+                setShowAuthModal(false);
+                setShowForgotPasswordModal(true);
+              }}
+              className="text-cyan-300 hover:text-cyan-200 transition-colors text-sm"
+            >
+              Forgot your password?
+            </button>
+          </div>
+        )}
 
         <div className="text-center mt-6">
           <button
@@ -693,6 +711,301 @@ function AuthModal() {
         >
           <X className="h-6 w-6" />
         </button>
+      </div>
+    </div>
+  );
+}
+
+/** ===== FORGOT PASSWORD MODAL ===== */
+function ForgotPasswordModal() {
+  const { showForgotPasswordModal, setShowForgotPasswordModal } = useApp();
+  const [isClosing, setIsClosing] = useState(false);
+  const [email, setEmail] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [message, setMessage] = useState('');
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setMessage('');
+
+    try {
+      const response = await fetch('/api/auth/forgot-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await response.json();
+      
+      if (response.ok) {
+        setMessage(data.message);
+        setTimeout(() => {
+          setShowForgotPasswordModal(false);
+          setEmail('');
+          setMessage('');
+        }, 3000);
+      } else {
+        setMessage(data.message || 'An error occurred. Please try again.');
+      }
+    } catch (error) {
+      setMessage('Network error. Please check your connection and try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleClose = () => {
+    setIsClosing(true);
+    setTimeout(() => {
+      setShowForgotPasswordModal(false);
+      setIsClosing(false);
+      setEmail('');
+      setMessage('');
+    }, 300);
+  };
+
+  if (!showForgotPasswordModal) return null;
+
+  return (
+    <div className={`fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 ${isClosing ? 'animate-fadeOut' : 'animate-fadeIn'}`} onClick={handleClose}>
+      <div className={`bg-gray-900 border border-white/10 rounded-2xl p-6 sm:p-8 max-w-md w-full ${isClosing ? 'animate-slideDown' : 'animate-slideUp'}`} onClick={(e) => e.stopPropagation()}>
+        <h2 className="text-2xl sm:text-3xl font-bold text-white mb-6 text-center">
+          Reset Your Password
+        </h2>
+        
+        {message ? (
+          <div className="text-center">
+            <div className={`text-lg ${message.includes('error') ? 'text-red-400' : 'text-green-400'}`}>
+              {message}
+            </div>
+            
+            {/* Email Service Quick Links */}
+            <div className="mt-6 p-4 bg-white/5 border border-white/10 rounded-lg">
+              <p className="text-sm text-gray-400 mb-3">Quick access to popular email services:</p>
+              <div className="grid grid-cols-2 gap-2">
+                <a 
+                  href="https://gmail.com" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center px-3 py-2 bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 rounded text-red-300 text-sm transition-all"
+                >
+                  📧 Gmail
+                </a>
+                <a 
+                  href="https://outlook.live.com" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center px-3 py-2 bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/30 rounded text-blue-300 text-sm transition-all"
+                >
+                  📧 Outlook
+                </a>
+                <a 
+                  href="https://mail.yahoo.com" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center px-3 py-2 bg-purple-500/20 hover:bg-purple-500/30 border border-purple-500/30 rounded text-purple-300 text-sm transition-all"
+                >
+                  📧 Yahoo Mail
+                </a>
+                <a 
+                  href="https://mail.aol.com" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center px-3 py-2 bg-orange-500/20 hover:bg-orange-500/30 border border-orange-500/30 rounded text-orange-300 text-sm transition-all"
+                >
+                  📧 AOL Mail
+                </a>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <>
+            <p className="text-gray-300 text-center mb-6">
+              Enter your email address and we'll send you a link to reset your password.
+            </p>
+            
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Email</label>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all duration-300 hover:border-white/30"
+                  placeholder="Enter your email"
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="w-full bg-gradient-to-r from-cyan-500 to-purple-600 text-white py-3 rounded-lg font-semibold hover:from-cyan-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isLoading ? 'Sending...' : 'Send Reset Link'}
+              </button>
+            </form>
+          </>
+        )}
+
+        <button
+          onClick={handleClose}
+          className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors"
+        >
+          <X className="h-6 w-6" />
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/** ===== RESET PASSWORD PAGE ===== */
+function ResetPassword() {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const token = searchParams.get('token');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [message, setMessage] = useState('');
+  const [isSuccess, setIsSuccess] = useState(false);
+
+  useEffect(() => {
+    if (!token) {
+      setMessage('Invalid reset link. Please request a new password reset.');
+      setIsSuccess(false);
+    }
+  }, [token]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (newPassword !== confirmPassword) {
+      setMessage('Passwords do not match.');
+      setIsSuccess(false);
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      setMessage('Password must be at least 6 characters long.');
+      setIsSuccess(false);
+      return;
+    }
+
+    setIsLoading(true);
+    setMessage('');
+
+    try {
+      const response = await fetch('/api/auth/reset-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ token, newPassword }),
+      });
+
+      const data = await response.json();
+      
+      if (response.ok) {
+        setMessage('Password reset successfully! Redirecting to login...');
+        setIsSuccess(true);
+        setTimeout(() => {
+          navigate('/');
+        }, 2000);
+      } else {
+        setMessage(data.message || 'An error occurred. Please try again.');
+        setIsSuccess(false);
+      }
+    } catch (error) {
+      setMessage('Network error. Please check your connection and try again.');
+      setIsSuccess(false);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  if (!token) {
+    return (
+      <div className="min-h-screen bg-[#0b0e1a] text-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-red-400 text-6xl mb-4">⚠️</div>
+          <h1 className="text-2xl font-bold text-white mb-4">Invalid Reset Link</h1>
+          <p className="text-gray-300 mb-6">This password reset link is invalid or has expired.</p>
+          <button
+            onClick={() => navigate('/')}
+            className="bg-gradient-to-r from-cyan-600 to-purple-700 hover:from-cyan-500 hover:to-purple-600 text-white px-6 py-3 rounded-lg font-semibold transition-all"
+          >
+            Return to Home
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-[#0b0e1a] text-white flex items-center justify-center p-4">
+      <div className="bg-gray-900 border border-white/10 rounded-2xl p-8 max-w-md w-full">
+        <div className="text-center mb-8">
+          <div className="w-16 h-16 bg-gradient-to-r from-cyan-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
+            <span className="text-white font-bold text-2xl">🔐</span>
+          </div>
+          <h1 className="text-3xl font-bold text-white mb-2">Reset Your Password</h1>
+          <p className="text-gray-300">Enter your new password below</p>
+        </div>
+
+        {message && (
+          <div className={`mb-6 p-4 rounded-lg ${isSuccess ? 'bg-green-500/20 border border-green-500/30 text-green-300' : 'bg-red-500/20 border border-red-500/30 text-red-300'}`}>
+            {message}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">New Password</label>
+            <input
+              type="password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              required
+              minLength={6}
+              className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all duration-300 hover:border-white/30"
+              placeholder="Enter new password"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">Confirm Password</label>
+            <input
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+              minLength={6}
+              className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all duration-300 hover:border-white/30"
+              placeholder="Confirm new password"
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="w-full bg-gradient-to-r from-cyan-500 to-purple-600 text-white py-3 rounded-lg font-semibold hover:from-cyan-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isLoading ? 'Resetting...' : 'Reset Password'}
+          </button>
+        </form>
+
+        <div className="text-center mt-6">
+          <button
+            onClick={() => navigate('/')}
+            className="text-cyan-300 hover:text-cyan-200 transition-colors text-sm"
+          >
+            Back to Home
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -3895,6 +4208,7 @@ export default function App() {
           <XPToast />
           <AuthModal />
           <EmployerAuthModal />
+          <ForgotPasswordModal />
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/jobs" element={<Jobs />} />
@@ -3910,6 +4224,7 @@ export default function App() {
             <Route path="/employer-dashboard" element={<ProtectedEmployerRoute><EmployerDashboard /></ProtectedEmployerRoute>} />
             <Route path="/my-xp" element={<MyXP />} />
             <Route path="/job-seeker-welcome" element={<JobSeekerWelcome />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
           </Routes>
         </div>
       </AppProvider>

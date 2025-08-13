@@ -38,6 +38,8 @@ const userSchema = new mongoose.Schema({
     },
     skills: [String]
   },
+  resetPasswordToken: String,
+  resetPasswordExpires: Date,
   createdAt: { type: Date, default: Date.now }
 });
 
@@ -95,6 +97,19 @@ const emailTemplates = {
           }
         </ul>
         <p>Start your journey today!</p>
+        
+        <!-- Email Service Quick Links -->
+        <div style="margin: 30px 0; padding: 20px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #06b6d4;">
+          <h3 style="color: #06b6d4; margin-top: 0;">📧 Quick Access to Your Email</h3>
+          <p style="margin-bottom: 15px; color: #666;">Click any of these services to quickly check your inbox:</p>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <a href="https://gmail.com" style="display: block; padding: 10px; background: #ea4335; color: white; text-decoration: none; border-radius: 6px; text-align: center; font-weight: bold; transition: background 0.3s;">Gmail</a>
+            <a href="https://outlook.live.com" style="display: block; padding: 10px; background: #0078d4; color: white; text-decoration: none; border-radius: 6px; text-align: center; font-weight: bold; transition: background 0.3s;">Outlook</a>
+            <a href="https://mail.yahoo.com" style="display: block; padding: 10px; background: #720e9e; color: white; text-decoration: none; border-radius: 6px; text-align: center; font-weight: bold; transition: background 0.3s;">Yahoo Mail</a>
+            <a href="https://mail.aol.com" style="display: block; padding: 10px; background: #ff6b00; color: white; text-decoration: none; border-radius: 6px; text-align: center; font-weight: bold; transition: background 0.3s;">AOL Mail</a>
+          </div>
+        </div>
+        
         <p>Best regards,<br>The ZeroXP Team</p>
       </div>
     `
@@ -116,6 +131,19 @@ const emailTemplates = {
           </div>
         `).join('')}
         <p>Login to ZeroXP to apply for these positions!</p>
+        
+        <!-- Email Service Quick Links -->
+        <div style="margin: 30px 0; padding: 20px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #06b6d4;">
+          <h3 style="color: #06b6d4; margin-top: 0;">📧 Quick Access to Your Email</h3>
+          <p style="margin-bottom: 15px; color: #666;">Click any of these services to quickly check your inbox:</p>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <a href="https://gmail.com" style="display: block; padding: 10px; background: #ea4335; color: white; text-decoration: none; border-radius: 6px; text-align: center; font-weight: bold; transition: background 0.3s;">Gmail</a>
+            <a href="https://outlook.live.com" style="display: block; padding: 10px; background: #0078d4; color: white; text-decoration: none; border-radius: 6px; text-align: center; font-weight: bold; transition: background 0.3s;">Outlook</a>
+            <a href="https://mail.yahoo.com" style="display: block; padding: 10px; background: #720e9e; color: white; text-decoration: none; border-radius: 6px; text-align: center; font-weight: bold; transition: background 0.3s;">Yahoo Mail</a>
+            <a href="https://mail.aol.com" style="display: block; padding: 10px; background: #ff6b00; color: white; text-decoration: none; border-radius: 6px; text-align: center; font-weight: bold; transition: background 0.3s;">AOL Mail</a>
+          </div>
+        </div>
+        
         <p>Best regards,<br>The ZeroXP Team</p>
       </div>
     `
@@ -467,6 +495,118 @@ app.put('/api/users/:userId', async (req, res) => {
     
     res.json({ message: 'Profile updated', user });
   } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
+
+// Forgot Password - Send Reset Email
+app.post('/api/auth/forgot-password', async (req, res) => {
+  try {
+    const { email } = req.body;
+    
+    // Check if user exists
+    const user = await User.findOne({ email });
+    if (!user) {
+      // Don't reveal if email exists or not for security
+      return res.json({ message: 'If an account with that email exists, a password reset link has been sent.' });
+    }
+    
+    // Generate reset token (valid for 1 hour)
+    const resetToken = jwt.sign(
+      { userId: user._id, email: user.email },
+      process.env.JWT_SECRET || 'fallback_secret',
+      { expiresIn: '1h' }
+    );
+    
+    // Store reset token in user document
+    user.resetPasswordToken = resetToken;
+    user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
+    await user.save();
+    
+    // Send reset email
+    const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/reset-password?token=${resetToken}`;
+    
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: 'ZeroXP - Password Reset Request',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h1 style="color: #06b6d4; text-align: center;">Password Reset Request</h1>
+          <p>Hi ${user.firstName || 'there'},</p>
+          <p>You requested a password reset for your ZeroXP account.</p>
+          <p>Click the button below to reset your password:</p>
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="${resetUrl}" style="background: linear-gradient(135deg, #06b6d4, #8b5cf6); color: white; padding: 12px 30px; text-decoration: none; border-radius: 8px; display: inline-block; font-weight: bold;">
+              Reset Password
+            </a>
+          </div>
+          <p>This link will expire in 1 hour for security reasons.</p>
+          <p>If you didn't request this reset, please ignore this email.</p>
+          
+          <!-- Email Service Quick Links -->
+          <div style="margin: 30px 0; padding: 20px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #06b6d4;">
+            <h3 style="color: #06b6d4; margin-top: 0;">📧 Quick Access to Your Email</h3>
+            <p style="margin-bottom: 15px; color: #666;">Click any of these services to quickly check your inbox:</p>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+              <a href="https://gmail.com" style="display: block; padding: 10px; background: #ea4335; color: white; text-decoration: none; border-radius: 6px; text-align: center; font-weight: bold; transition: background 0.3s;">Gmail</a>
+              <a href="https://outlook.live.com" style="display: block; padding: 10px; background: #0078d4; color: white; text-decoration: none; border-radius: 6px; text-align: center; font-weight: bold; transition: background 0.3s;">Outlook</a>
+              <a href="https://mail.yahoo.com" style="display: block; padding: 10px; background: #720e9e; color: white; text-decoration: none; border-radius: 6px; text-align: center; font-weight: bold; transition: background 0.3s;">Yahoo Mail</a>
+              <a href="https://mail.aol.com" style="display: block; padding: 10px; background: #ff6b00; color: white; text-decoration: none; border-radius: 6px; text-align: center; font-weight: bold; transition: background 0.3s;">AOL Mail</a>
+            </div>
+          </div>
+          
+          <p>Best regards,<br>The ZeroXP Team</p>
+        </div>
+      `
+    };
+    
+    await transporter.sendMail(mailOptions);
+    
+    res.json({ message: 'If an account with that email exists, a password reset link has been sent.' });
+  } catch (error) {
+    console.error('Forgot password error:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
+
+// Reset Password - Verify Token and Update Password
+app.post('/api/auth/reset-password', async (req, res) => {
+  try {
+    const { token, newPassword } = req.body;
+    
+    // Verify token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback_secret');
+    
+    // Find user and check if token is still valid
+    const user = await User.findOne({
+      _id: decoded.userId,
+      resetPasswordToken: token,
+      resetPasswordExpires: { $gt: Date.now() }
+    });
+    
+    if (!user) {
+      return res.status(400).json({ message: 'Invalid or expired reset token' });
+    }
+    
+    // Hash new password
+    const hashedPassword = await bcrypt.hash(newPassword, 12);
+    
+    // Update password and clear reset token
+    user.password = hashedPassword;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
+    await user.save();
+    
+    res.json({ message: 'Password reset successfully' });
+  } catch (error) {
+    if (error.name === 'JsonWebTokenError') {
+      return res.status(400).json({ message: 'Invalid reset token' });
+    }
+    if (error.name === 'TokenExpiredError') {
+      return res.status(400).json({ message: 'Reset token has expired' });
+    }
+    console.error('Reset password error:', error);
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 });
