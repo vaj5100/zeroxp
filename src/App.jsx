@@ -351,15 +351,6 @@ function AppProvider({ children }) {
     // Close the appropriate modal
     setShowAuthModal(false);
     setShowEmployerAuthModal(false);
-    
-    // Redirect to appropriate dashboard
-    setTimeout(() => {
-      if (type === 'jobseeker') {
-        window.location.href = '/dashboard';
-      } else if (type === 'employer') {
-        window.location.href = '/employer-dashboard';
-      }
-    }, 100);
   };
 
   const logout = () => {
@@ -552,14 +543,14 @@ function Header() {
               <>
                 <Link to="/job-seeker-welcome" className="text-gray-300 hover:text-white transition-colors py-2">Welcome</Link>
                 <Link to="/jobs" className="text-gray-300 hover:text-white transition-colors py-2">Jobs</Link>
-                <Link to="/guides" className="text-gray-300 hover:text-white transition-colors py-2">Guides</Link>
+                <Link to="/xp-guide" className="text-gray-300 hover:text-white transition-colors py-2">XP Guide</Link>
+                <Link to="/pricing" className="text-gray-300 hover:text-white transition-colors py-2">Pricing</Link>
                 <button
                   onClick={() => handleLogin('employer')}
                   className="text-gray-400 hover:text-gray-300 transition-colors text-sm py-2"
                 >
                   For Employers
                 </button>
-                <Link to="/pricing" className="text-gray-500 hover:text-gray-400 transition-colors text-xs py-2">Pricing</Link>
                 <button
                   onClick={() => handleLogin('jobseeker')}
                   className="px-4 py-2 bg-gradient-to-r from-cyan-500 to-purple-600 text-white rounded-lg font-semibold hover:from-cyan-600 hover:to-purple-700 transition-all duration-300"
@@ -571,15 +562,13 @@ function Header() {
               <div className="flex items-center space-x-4">
                 {userType === 'jobseeker' && (
                   <>
-                    <Link to="/dashboard" className="text-gray-300 hover:text-white transition-colors py-2">Dashboard</Link>
                     <Link to="/jobs" className="text-gray-300 hover:text-white transition-colors py-2">Jobs</Link>
-                    <Link to="/guides" className="text-gray-300 hover:text-white transition-colors py-2">Guides</Link>
+                    <Link to="/xp-guide" className="text-gray-300 hover:text-white transition-colors py-2">XP Guide</Link>
                     <Link to="/my-xp" className="text-gray-300 hover:text-white transition-colors py-2">My XP</Link>
                   </>
                 )}
                 {userType === 'employer' && (
                   <>
-                    <Link to="/employer-dashboard" className="text-gray-300 hover:text-white transition-colors py-2">Dashboard</Link>
                     <Link to="/post-job" className="text-gray-300 hover:text-white transition-colors py-2">Post Job</Link>
                     <Link to="/employer-hub" className="text-gray-300 hover:text-white transition-colors py-2">Employer Hub</Link>
                   </>
@@ -631,11 +620,18 @@ function Header() {
                     Jobs
                   </Link>
                   <Link 
-                    to="/guides" 
+                    to="/xp-guide" 
                     className="text-gray-300 hover:text-white transition-colors py-2 px-4 rounded-lg hover:bg-white/5"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
-                    Guides
+                    XP Guide
+                  </Link>
+                  <Link 
+                    to="/pricing" 
+                    className="text-gray-300 hover:text-white transition-colors py-2 px-4 rounded-lg hover:bg-white/5"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Pricing
                   </Link>
                   <button
                     onClick={() => handleLogin('employer')}
@@ -643,13 +639,6 @@ function Header() {
                   >
                     For Employers
                   </button>
-                  <Link 
-                    to="/pricing" 
-                    className="text-gray-500 hover:text-gray-400 transition-colors text-xs py-2 px-4 rounded-lg hover:bg-white/5"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    Pricing
-                  </Link>
                   <button
                     onClick={() => handleLogin('jobseeker')}
                     className="bg-gradient-to-r from-cyan-500 to-purple-600 text-white px-4 py-2 rounded-lg font-semibold hover:from-cyan-600 hover:to-purple-700 transition-all duration-300 text-left"
@@ -662,13 +651,6 @@ function Header() {
                   {userType === 'jobseeker' && (
                     <>
                       <Link 
-                        to="/dashboard" 
-                        className="text-gray-300 hover:text-white transition-colors py-2 px-4 rounded-lg hover:bg-white/5"
-                        onClick={() => setIsMobileMenuOpen(false)}
-                      >
-                        Dashboard
-                      </Link>
-                      <Link 
                         to="/jobs" 
                         className="text-gray-300 hover:text-white transition-colors py-2 px-4 rounded-lg hover:bg-white/5"
                         onClick={() => setIsMobileMenuOpen(false)}
@@ -676,11 +658,11 @@ function Header() {
                         Jobs
                       </Link>
                       <Link 
-                        to="/guides" 
+                        to="/xp-guide" 
                         className="text-gray-300 hover:text-white transition-colors py-2 px-4 rounded-lg hover:bg-white/5"
                         onClick={() => setIsMobileMenuOpen(false)}
                       >
-                        Guides
+                        XP Guide
                       </Link>
                       <Link 
                         to="/my-xp" 
@@ -693,13 +675,6 @@ function Header() {
                   )}
                   {userType === 'employer' && (
                     <>
-                      <Link 
-                        to="/employer-dashboard" 
-                        className="text-gray-300 hover:text-white transition-colors py-2 px-4 rounded-lg hover:bg-white/5"
-                        onClick={() => setIsMobileMenuOpen(false)}
-                      >
-                        Dashboard
-                      </Link>
                       <Link 
                         to="/post-job" 
                         className="text-gray-300 hover:text-white transition-colors py-2 px-4 rounded-lg hover:bg-white/5"
@@ -2648,10 +2623,14 @@ function EmployerHub() {
 
 function MyXP() {
   const { isLoggedIn, userJobHuntXP, userType } = useApp();
-  const navigate = useNavigate();
   const careerLevel = getJobHuntXPLevel(userJobHuntXP);
   const nextLevel = getNextLevelXP(userJobHuntXP);
   const progress = getXPProgress(userJobHuntXP);
+  const [headerRef, headerVisible] = useScrollAnimation();
+  const [levelRef, levelVisible] = useScrollAnimation();
+  const [statsRef, statsVisible] = useScrollAnimation();
+  const [activityRef, activityVisible] = useScrollAnimation();
+  const [tipsRef, tipsVisible] = useScrollAnimation();
 
   if (!isLoggedIn || userType !== 'jobseeker') {
     return (
@@ -2662,436 +2641,109 @@ function MyXP() {
     );
   }
 
-  // Mock data for achievements and goals
-  const achievements = [
-    { id: 1, name: "First Steps", description: "Complete your profile", earned: true, icon: "🎯", xp: 50 },
-    { id: 2, name: "Job Hunter", description: "Apply to 5 jobs", earned: true, icon: "📝", xp: 175 },
-    { id: 3, name: "Video Star", description: "Upload video CV", earned: false, icon: "🎥", xp: 200 },
-    { id: 4, name: "Consistent", description: "Login for 7 days", earned: false, icon: "🔥", xp: 35 },
-    { id: 5, name: "Networker", description: "Connect with 3 employers", earned: false, icon: "🤝", xp: 100 },
-    { id: 6, name: "Elite Status", description: "Reach Level 5", earned: false, icon: "👑", xp: 500 }
-  ];
-
-  const recentActivity = [
-    { action: "Applied to Frontend Developer", xp: 35, time: "2 hours ago", type: "application" },
-    { action: "Daily login bonus", xp: 5, time: "1 day ago", type: "bonus" },
-    { action: "Profile completion", xp: 50, time: "3 days ago", type: "profile" },
-    { action: "Applied to React Developer", xp: 35, time: "1 week ago", type: "application" }
-  ];
-
-  const goals = [
-    { id: 1, name: "Reach Level 3", target: "Priority placement", progress: 65, xpNeeded: 500 },
-    { id: 2, name: "Apply to 20 jobs", target: "Increase interview chances", progress: 25, xpNeeded: 700 },
-    { id: 3, name: "Complete all achievements", target: "Unlock elite status", progress: 40, xpNeeded: 1000 }
-  ];
-
   return (
-    <div className="min-h-screen bg-[#0b0e1a] text-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header with XP Summary */}
-        <div className="bg-gradient-to-r from-cyan-500/10 to-purple-600/10 border border-cyan-500/20 rounded-xl p-8 mb-8">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
-            <div className="lg:col-span-2">
-              <h1 className="text-4xl font-bold mb-4">
-                Your Career Journey
-              </h1>
-              <p className="text-gray-300 text-lg mb-6">
-                Track your progress, unlock achievements, and set goals to level up your career.
-              </p>
-              
-              {/* XP Progress */}
-              <div className="bg-white/5 rounded-lg p-4 mb-4">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-cyan-400 font-semibold">Level {careerLevel.level}</span>
-                  <span className="text-gray-300">{userJobHuntXP} / {nextLevel} XP</span>
-                </div>
-                <div className="w-full bg-white/10 rounded-full h-3">
-                  <div 
-                    className="bg-gradient-to-r from-cyan-500 to-purple-600 h-3 rounded-full transition-all duration-500"
-                    style={{ width: `${progress}%` }}
-                  ></div>
-                </div>
-                <p className="text-sm text-gray-400 mt-2">
-                  {nextLevel - userJobHuntXP} XP to reach {careerLevel.name}
-                </p>
-              </div>
-            </div>
-            
-            <div className="text-center">
-              <div className="w-24 h-24 bg-gradient-to-r from-cyan-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-white text-4xl">{careerLevel.icon}</span>
-              </div>
-              <h3 className="text-xl font-bold text-white">{careerLevel.name}</h3>
-              <p className="text-gray-300 text-sm">{careerLevel.advantage}</p>
-            </div>
+    <div className="px-6 py-24 max-w-7xl mx-auto space-y-12">
+      <div ref={headerRef} className={`text-center ${headerVisible ? 'animate-on-scroll animate-in' : 'animate-on-scroll'}`}>
+        <h1 className="text-5xl font-extrabold mb-6">My <span className="bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">Career XP</span></h1>
+        <p className="text-gray-300">Track your job hunting progress and achievements</p>
+      </div>
+
+      {/* Current Level Card */}
+      <div ref={levelRef} className={`bg-gradient-to-r from-purple-500/10 to-cyan-500/10 border border-purple-500/30 rounded-2xl p-8 ${levelVisible ? 'animate-on-scroll-scale animate-in' : 'animate-on-scroll-scale'}`}>
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h2 className="text-2xl font-bold text-white mb-2">{careerLevel.name}</h2>
+            <p className="text-gray-300">{careerLevel.advantage}</p>
+          </div>
+          <div className={`w-16 h-16 ${careerLevel.badge} rounded-full flex items-center justify-center text-2xl`}>
+            {careerLevel.icon}
           </div>
         </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Left Column - Achievements & Goals */}
-          <div className="space-y-8">
-            {/* Achievements */}
-            <div className="bg-white/5 border border-white/10 rounded-xl p-6">
-              <h3 className="text-xl font-bold mb-4 flex items-center">
-                <span className="mr-2">🏆</span>
-                Achievements
-              </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {achievements.map((achievement) => (
-                  <div 
-                    key={achievement.id} 
-                    className={`p-4 rounded-lg border transition-all ${
-                      achievement.earned 
-                        ? 'bg-green-500/10 border-green-500/30' 
-                        : 'bg-white/5 border-white/10'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-2xl">{achievement.icon}</span>
-                      <span className={`text-sm px-2 py-1 rounded ${
-                        achievement.earned 
-                          ? 'bg-green-500/20 text-green-300' 
-                          : 'bg-gray-500/20 text-gray-400'
-                      }`}>
-                        {achievement.earned ? 'Earned' : 'Locked'}
-                      </span>
-                    </div>
-                    <h4 className="font-semibold text-white mb-1">{achievement.name}</h4>
-                    <p className="text-gray-300 text-sm mb-2">{achievement.description}</p>
-                    <div className="text-cyan-400 text-sm font-medium">+{achievement.xp} XP</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Goals */}
-            <div className="bg-white/5 border border-white/10 rounded-xl p-6">
-              <h3 className="text-xl font-bold mb-4 flex items-center">
-                <span className="mr-2">🎯</span>
-                Your Goals
-              </h3>
-              <div className="space-y-4">
-                {goals.map((goal) => (
-                  <div key={goal.id} className="bg-white/5 rounded-lg p-4">
-                    <div className="flex justify-between items-start mb-2">
-                      <h4 className="font-semibold text-white">{goal.name}</h4>
-                      <span className="text-cyan-400 text-sm font-medium">{goal.xpNeeded} XP</span>
-                    </div>
-                    <p className="text-gray-300 text-sm mb-3">{goal.target}</p>
-                    <div className="w-full bg-white/10 rounded-full h-2">
-                      <div 
-                        className="bg-gradient-to-r from-purple-500 to-cyan-600 h-2 rounded-full transition-all duration-500"
-                        style={{ width: `${goal.progress}%` }}
-                      ></div>
-                    </div>
-                    <div className="text-right text-sm text-gray-400 mt-1">{goal.progress}% complete</div>
-                  </div>
-                ))}
-              </div>
-            </div>
+        
+        {/* XP Progress Bar */}
+        <div className="mb-4">
+          <div className="flex justify-between text-sm text-gray-300 mb-2">
+            <span>{userJobHuntXP} XP</span>
+            <span>{nextLevel} XP to next level</span>
           </div>
-
-          {/* Right Column - Activity & Quick Actions */}
-          <div className="space-y-8">
-            {/* Recent Activity */}
-            <div className="bg-white/5 border border-white/10 rounded-xl p-6">
-              <h3 className="text-xl font-bold mb-4 flex items-center">
-                <span className="mr-2">📊</span>
-                Recent Activity
-              </h3>
-              <div className="space-y-3">
-                {recentActivity.map((activity, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
-                    <div className="flex items-center space-x-3">
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                        activity.type === 'application' ? 'bg-cyan-500/20' :
-                        activity.type === 'bonus' ? 'bg-purple-500/20' :
-                        'bg-emerald-500/20'
-                      }`}>
-                        <span className={`text-sm font-bold ${
-                          activity.type === 'application' ? 'text-cyan-300' :
-                          activity.type === 'bonus' ? 'text-purple-300' :
-                          'text-emerald-300'
-                        }`}>
-                          +{activity.xp}
-                        </span>
-                      </div>
-                      <div>
-                        <div className="text-white font-medium">{activity.action}</div>
-                        <div className="text-gray-400 text-sm">{activity.time}</div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Quick Actions */}
-            <div className="bg-white/5 border border-white/10 rounded-xl p-6">
-              <h3 className="text-xl font-bold mb-4 flex items-center">
-                <span className="mr-2">⚡</span>
-                Quick Actions
-              </h3>
-              <div className="space-y-3">
-                <button 
-                  onClick={() => navigate('/jobs')}
-                  className="w-full text-left p-3 bg-gradient-to-r from-cyan-500/20 to-purple-500/20 hover:from-cyan-500/30 hover:to-purple-500/30 rounded-lg transition-all border border-cyan-500/30"
-                >
-                  <div className="font-medium text-white">Browse Jobs</div>
-                  <div className="text-sm text-gray-300">Find opportunities to earn XP</div>
-                </button>
-                
-                <button 
-                  onClick={() => navigate('/profile')}
-                  className="w-full text-left p-3 bg-white/5 hover:bg-white/10 rounded-lg transition-all"
-                >
-                  <div className="font-medium text-white">Update Profile</div>
-                  <div className="text-sm text-gray-300">Complete profile for bonus XP</div>
-                </button>
-                
-                <button 
-                  onClick={() => navigate('/guides')}
-                  className="w-full text-left p-3 bg-white/5 hover:bg-white/10 rounded-lg transition-all"
-                >
-                  <div className="font-medium text-white">View Guides</div>
-                  <div className="text-sm text-gray-300">Learn how to maximize XP gains</div>
-                </button>
-              </div>
-            </div>
-
-            {/* XP Stats */}
-            <div className="bg-gradient-to-r from-purple-500/10 to-cyan-500/10 border border-purple-500/20 rounded-xl p-6">
-              <h3 className="text-xl font-bold mb-4 text-center">XP Statistics</h3>
-              <div className="grid grid-cols-2 gap-4 text-center">
-                <div>
-                  <div className="text-2xl font-bold text-cyan-400">{userJobHuntXP}</div>
-                  <div className="text-sm text-gray-400">Total XP</div>
-                </div>
-                <div>
-                  <div className="text-2xl font-bold text-purple-400">{careerLevel.level}</div>
-                  <div className="text-sm text-gray-400">Current Level</div>
-                </div>
-                <div>
-                  <div className="text-2xl font-bold text-emerald-400">{achievements.filter(a => a.earned).length}</div>
-                  <div className="text-sm text-gray-400">Achievements</div>
-                </div>
-                <div>
-                  <div className="text-2xl font-bold text-yellow-400">{recentActivity.length}</div>
-                  <div className="text-sm text-gray-400">Activities</div>
-                </div>
-              </div>
-            </div>
+          <div className="w-full bg-white/10 rounded-full h-3">
+            <div 
+              className="bg-gradient-to-r from-cyan-500 to-purple-600 h-3 rounded-full transition-all duration-500"
+              style={{ width: `${progress}%` }}
+            ></div>
           </div>
         </div>
       </div>
-    </div>
-  );
-}
 
-/** ===== GUIDES PAGE ===== */
-function Guides() {
-  const navigate = useNavigate();
-  
-  const careerArticles = [
-    {
-      title: "The Numbers Game: Why Applying to More Jobs Increases Your Success",
-      excerpt: "Learn why quantity often beats quality in job hunting and how to apply efficiently without sacrificing quality.",
-      category: "Job Search Strategy",
-      readTime: "5 min read",
-      featured: true
-    },
-    {
-      title: "How to Write a Resume That Gets Past ATS Systems",
-      excerpt: "Master the art of creating resumes that both human recruiters and AI systems will love.",
-      category: "Resume Writing",
-      readTime: "7 min read"
-    },
-    {
-      title: "Interview Preparation: The Complete Guide",
-      excerpt: "From research to follow-up, everything you need to ace your next interview.",
-      category: "Interviewing",
-      readTime: "8 min read"
-    },
-    {
-      title: "Networking for Introverts: Building Connections Your Way",
-      excerpt: "Effective networking strategies that don't require being the loudest person in the room.",
-      category: "Networking",
-      readTime: "6 min read"
-    },
-    {
-      title: "Salary Negotiation: Getting What You're Worth",
-      excerpt: "Proven techniques to negotiate better compensation without burning bridges.",
-      category: "Career Growth",
-      readTime: "6 min read"
-    }
-  ];
-
-  return (
-    <div className="min-h-screen bg-[#0b0e1a] text-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl sm:text-5xl font-bold mb-6 bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">
-            Career Guides & Resources
-          </h1>
-          <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-            Everything you need to level up your career, from understanding XP to mastering job search strategies
-          </p>
+      {/* XP Stats Grid */}
+      <div ref={statsRef} className={`grid md:grid-cols-3 gap-6 ${statsVisible ? 'animate-on-scroll animate-in' : 'animate-on-scroll'}`}>
+        <div className="bg-white/5 border border-white/10 rounded-xl p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-white">Total XP</h3>
+            <div className="text-2xl font-bold text-cyan-400">{userJobHuntXP}</div>
+          </div>
+          <p className="text-gray-300 text-sm">Your career progression points</p>
         </div>
 
-        {/* Featured Article - Numbers Game */}
-        <div className="bg-gradient-to-r from-cyan-500/10 to-purple-600/10 border border-cyan-500/20 rounded-xl p-8 mb-12">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-            <div>
-              <div className="inline-block px-3 py-1 bg-cyan-500/20 text-cyan-300 text-sm rounded-full mb-4">
-                Featured Article
-              </div>
-              <h2 className="text-3xl font-bold mb-4">
-                The Numbers Game: Why More Applications = More Success
-              </h2>
-              <p className="text-gray-300 text-lg mb-6">
-                In job hunting, quantity often beats quality. Learn why applying to more jobs increases your chances of landing the perfect role, and how to do it efficiently without sacrificing quality.
-              </p>
-              <div className="grid grid-cols-3 gap-4 mb-6">
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-cyan-400">85%</div>
-                  <div className="text-sm text-gray-400">Success rate with 50+ applications</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-purple-400">3x</div>
-                  <div className="text-sm text-gray-400">More interviews with volume approach</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-green-400">2.5x</div>
-                  <div className="text-sm text-gray-400">Faster job placement</div>
-                </div>
-              </div>
-              <button className="px-6 py-3 bg-gradient-to-r from-cyan-500 to-purple-600 text-white rounded-lg hover:from-cyan-600 hover:to-purple-700 transition-all font-semibold">
-                Read Full Article
-              </button>
-            </div>
-            <div className="bg-white/5 rounded-xl p-6">
-              <h3 className="text-xl font-bold mb-4 text-center">The Numbers Don't Lie</h3>
-              <div className="space-y-4">
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-300">1-10 applications</span>
-                  <span className="text-red-400">15% success rate</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-300">11-25 applications</span>
-                  <span className="text-yellow-400">35% success rate</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-300">26-50 applications</span>
-                  <span className="text-green-400">65% success rate</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-300">50+ applications</span>
-                  <span className="text-cyan-400">85% success rate</span>
-                </div>
-              </div>
-            </div>
+        <div className="bg-white/5 border border-white/10 rounded-xl p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-white">Current Level</h3>
+            <div className="text-2xl font-bold text-purple-400">{careerLevel.level}</div>
           </div>
+          <p className="text-gray-300 text-sm">Career tier achieved</p>
         </div>
 
-        {/* XP Guide Section */}
-        <div className="mb-12">
-          <h2 className="text-3xl font-bold mb-8 text-center">Understanding the XP System</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div className="bg-white/5 border border-white/10 rounded-xl p-6">
-              <div className="w-12 h-12 bg-gradient-to-r from-cyan-500 to-purple-600 rounded-lg flex items-center justify-center mb-4">
-                <Zap className="w-6 h-6 text-white" />
-              </div>
-              <h3 className="text-xl font-bold mb-3">How XP Works</h3>
-              <p className="text-gray-300 mb-4">
-                Earn XP through various career-building activities. The more you engage, the faster you level up and get priority visibility to employers.
-              </p>
-              <div className="text-sm text-cyan-400">
-                • Sign up: +25 XP<br/>
-                • Apply to jobs: +35 XP<br/>
-                • Complete profile: +50 XP<br/>
-                • Upload video CV: +200 XP
-              </div>
-            </div>
+        <div className="bg-white/5 border border-white/10 rounded-xl p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-white">Next Level</h3>
+            <div className="text-2xl font-bold text-emerald-400">{nextLevel - userJobHuntXP}</div>
+          </div>
+          <p className="text-gray-300 text-sm">XP needed to level up</p>
+        </div>
+      </div>
 
-            <div className="bg-white/5 border border-white/10 rounded-xl p-6">
-              <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-cyan-600 rounded-lg flex items-center justify-center mb-4">
-                <TrendingUp className="w-6 h-6 text-white" />
+      {/* Recent XP Gains */}
+      <div ref={activityRef} className={`bg-white/5 border border-white/10 rounded-xl p-6 ${activityVisible ? 'animate-on-scroll-left animate-in' : 'animate-on-scroll-left'}`}>
+        <h3 className="text-xl font-semibold text-white mb-4">Recent Activity</h3>
+        <div className="space-y-3">
+          <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
+            <div className="flex items-center space-x-3">
+              <div className="w-8 h-8 bg-cyan-500/20 rounded-full flex items-center justify-center">
+                <span className="text-cyan-300 text-sm">+35</span>
               </div>
-              <h3 className="text-xl font-bold mb-3">Leveling Up</h3>
-              <p className="text-gray-300 mb-4">
-                Progress through 5 career levels, each unlocking new opportunities and priority placement in employer searches.
-              </p>
-              <div className="text-sm text-purple-400">
-                • Level 1: Basic visibility<br/>
-                • Level 3: Priority placement<br/>
-                • Level 5: Top-tier priority<br/>
-                • Elite status benefits
-              </div>
+              <span className="text-gray-300">Applied to job</span>
             </div>
-
-            <div className="bg-white/5 border border-white/10 rounded-xl p-6">
-              <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-blue-600 rounded-lg flex items-center justify-center mb-4">
-                <Users className="w-6 h-6 text-white" />
+            <span className="text-gray-400 text-sm">2 hours ago</span>
+          </div>
+          <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
+            <div className="flex items-center space-x-3">
+              <div className="w-8 h-8 bg-purple-500/20 rounded-full flex items-center justify-center">
+                <span className="text-purple-300 text-sm">+5</span>
               </div>
-              <h3 className="text-xl font-bold mb-3">Employer Benefits</h3>
-              <p className="text-gray-300 mb-4">
-                Higher XP candidates appear first in employer searches, giving you a competitive advantage in the job market.
-              </p>
-              <div className="text-sm text-green-400">
-                • Level 1: Basic visibility<br/>
-                • Level 3: Priority placement<br/>
-                • Level 5: Top-tier priority<br/>
-                • Elite status benefits
-              </div>
+              <span className="text-gray-300">Daily login</span>
             </div>
+            <span className="text-gray-400 text-sm">1 day ago</span>
+          </div>
+          <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
+            <div className="flex items-center space-x-3">
+              <div className="w-8 h-8 bg-emerald-500/20 rounded-full flex items-center justify-center">
+                <span className="text-emerald-300 text-sm">+50</span>
+              </div>
+              <span className="text-gray-300">Completed profile</span>
+            </div>
+            <span className="text-gray-400 text-sm">3 days ago</span>
           </div>
         </div>
+      </div>
 
-        {/* Career Advice Articles */}
-        <div>
-          <h2 className="text-3xl font-bold mb-8 text-center">Career Advice & Tips</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {careerArticles.slice(1).map((article, index) => (
-              <div key={index} className="bg-white/5 border border-white/10 rounded-xl p-6 hover:border-cyan-500/30 transition-all">
-                <div className="flex justify-between items-start mb-3">
-                  <span className="px-2 py-1 bg-cyan-500/20 text-cyan-300 text-xs rounded">
-                    {article.category}
-                  </span>
-                  <span className="text-sm text-gray-400">{article.readTime}</span>
-                </div>
-                <h3 className="text-xl font-bold mb-3 text-white">{article.title}</h3>
-                <p className="text-gray-300 mb-4">{article.excerpt}</p>
-                <button className="text-cyan-400 hover:text-cyan-300 transition-colors font-medium">
-                  Read More →
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Call to Action */}
-        <div className="text-center mt-16">
-          <div className="bg-gradient-to-r from-cyan-500/10 to-purple-600/10 border border-cyan-500/20 rounded-xl p-8">
-            <h3 className="text-2xl font-bold mb-4">Ready to Start Building XP?</h3>
-            <p className="text-gray-300 mb-6">
-              Apply to jobs, complete your profile, and start level up your career today.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button 
-                onClick={() => navigate('/jobs')}
-                className="px-6 py-3 bg-gradient-to-r from-cyan-500 to-purple-600 text-white rounded-lg hover:from-cyan-600 hover:to-purple-700 transition-all font-semibold"
-              >
-                Browse Jobs
-              </button>
-              <button 
-                onClick={() => navigate('/profile')}
-                className="px-6 py-3 bg-white/10 hover:bg-white/20 text-white rounded-lg border border-white/20 transition-all font-semibold"
-              >
-                Complete Profile
-              </button>
-            </div>
-          </div>
+      {/* XP Tips */}
+      <div ref={tipsRef} className={`bg-gradient-to-r from-cyan-500/10 to-purple-500/10 border border-cyan-500/30 rounded-xl p-6 ${tipsVisible ? 'animate-on-scroll-right animate-in' : 'animate-on-scroll-right'}`}>
+        <h3 className="text-xl font-semibold text-white mb-4">💡 XP Tips</h3>
+        <div className="space-y-3 text-gray-300">
+          <p>• Apply to jobs regularly to earn consistent XP</p>
+          <p>• Complete your profile to unlock bonus XP</p>
+          <p>• Upload a video CV for a significant XP boost</p>
+          <p>• Log in daily to maintain your streak</p>
         </div>
       </div>
     </div>
@@ -3322,7 +2974,7 @@ function JobSeekerWelcome() {
 }
 
 /** ===== ROOT APP ===== */
-function App() {
+export default function App() {
   return (
     <BrowserRouter>
       <AppProvider>
@@ -3334,8 +2986,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/jobs" element={<Jobs />} />
-            <Route path="/guides" element={<Guides />} />
-        <Route path="/xp-guide" element={<XPGuide />} />
+            <Route path="/xp-guide" element={<XPGuide />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/candidates" element={<Candidates />} />
             <Route path="/post-job" element={<PostJob />} />
@@ -3344,7 +2995,6 @@ function App() {
             <Route path="/employer-welcome" element={<EmployerWelcomePage />} />
             <Route path="/employer-hub" element={<EmployerHub />} />
             <Route path="/employer-dashboard" element={<EmployerDashboard />} />
-            <Route path="/dashboard" element={<JobSeekerDashboard />} />
             <Route path="/my-xp" element={<MyXP />} />
             <Route path="/job-seeker-welcome" element={<JobSeekerWelcome />} />
           </Routes>
@@ -3643,378 +3293,256 @@ function EmployerWelcomePage() {
   );
 }
 
-/** ===== EMPLOYER DASHBOARD ===== */
-function EmployerDashboard() {
-  const { userProfile, jobs } = useApp();
-  const navigate = useNavigate();
-  
-  // Mock data for employer stats
-  const totalJobs = jobs.length;
-  const totalApplications = jobs.reduce((sum, job) => sum + (job.applicants?.length || 0), 0);
-  const activeJobs = jobs.filter(job => job.applicants && job.applicants.length > 0).length;
-  
-  // Get recent applications across all jobs
-  const recentApplications = [
-    { name: "John Smith", position: "Frontend Developer", company: "Tech Corp", xp: 1250, status: "New", date: "2 hours ago" },
-    { name: "Sarah Johnson", position: "React Developer", company: "Startup Inc", xp: 890, status: "Under Review", date: "1 day ago" },
-    { name: "Mike Chen", position: "Full Stack Developer", company: "Enterprise Co", xp: 2100, status: "New", date: "3 days ago" }
-  ];
+// Employer Dashboard Component
+const EmployerDashboard = () => {
+  const { userProfile, isLoggedIn, userType } = useApp();
+  const [jobs, setJobs] = useState([]);
+  const [selectedJob, setSelectedJob] = useState(null);
+  const [applications, setApplications] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  return (
-    <div className="min-h-screen bg-[#0b0e1a] text-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Welcome Section */}
-        <div className="bg-gradient-to-r from-purple-500/10 to-cyan-600/10 border border-purple-500/20 rounded-xl p-6 mb-8">
-          <h1 className="text-3xl font-bold mb-2">
-            Welcome back, {userProfile?.companyName || 'Employer'}! 🏢
-          </h1>
-          <p className="text-gray-300 text-lg">
-            Manage your job postings and find the perfect candidates.
-          </p>
-        </div>
-
-        {/* Stats Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white/5 border border-white/10 rounded-xl p-6 text-center">
-            <div className="text-3xl font-bold text-cyan-500 mb-2">{totalJobs}</div>
-            <div className="text-gray-400">Total Jobs Posted</div>
-          </div>
-          <div className="bg-white/5 border border-white/10 rounded-xl p-6 text-center">
-            <div className="text-3xl font-bold text-purple-500 mb-2">{totalApplications}</div>
-            <div className="text-gray-400">Total Applications</div>
-          </div>
-          <div className="bg-white/5 border border-white/10 rounded-xl p-6 text-center">
-            <div className="text-3xl font-bold text-green-500 mb-2">{activeJobs}</div>
-            <div className="text-gray-400">Active Jobs</div>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Main Content - Active Job Postings */}
-          <div className="lg:col-span-2">
-            <div className="bg-white/5 border border-white/10 rounded-xl p-6">
-              <h2 className="text-2xl font-bold mb-6 flex items-center">
-                <Users className="w-6 h-6 mr-3 text-purple-400" />
-                Active Job Postings
-              </h2>
-              
-              <div className="space-y-4">
-                {jobs.slice(0, 3).map((job, index) => (
-                  <div key={index} className="bg-white/5 border border-white/10 rounded-lg p-4 hover:border-purple-500/30 transition-all">
-                    <div className="flex justify-between items-start mb-3">
-                      <div>
-                        <h3 className="font-semibold text-lg text-white">{job.title}</h3>
-                        <p className="text-gray-400">{job.company}</p>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-2xl font-bold text-purple-500">${job.salary.toLocaleString()}</div>
-                        <div className="text-sm text-gray-500">per year</div>
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-center text-sm text-gray-400 mb-3">
-                      <MapPin className="w-4 h-4 mr-2" />
-                      {job.location}
-                    </div>
-                    
-                    <div className="flex justify-between items-center">
-                      <div className="text-sm text-gray-400">
-                        <span className="text-cyan-400 font-medium">{job.applicants?.length || 0}</span> applications
-                      </div>
-                      <button 
-                        onClick={() => navigate('/employer-hub')}
-                        className="px-4 py-2 bg-gradient-to-r from-purple-500 to-cyan-600 text-white rounded-lg hover:from-purple-600 hover:to-cyan-700 transition-all"
-                      >
-                        View Applications
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              
-              <div className="mt-6 text-center">
-                <button 
-                  onClick={() => navigate('/employer-hub')}
-                  className="px-6 py-3 bg-white/10 hover:bg-white/20 text-white rounded-lg border border-white/20 transition-all"
-                >
-                  Manage All Jobs
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Sidebar - Recent Applications & Actions */}
-          <div className="space-y-6">
-            {/* Recent Applications */}
-            <div className="bg-white/5 border border-white/10 rounded-xl p-6">
-              <h3 className="text-xl font-bold mb-4">Recent Applications</h3>
-              <div className="space-y-3">
-                {recentApplications.map((app, index) => (
-                  <div key={index} className="bg-white/5 rounded-lg p-3">
-                    <div className="flex justify-between items-start mb-2">
-                      <div>
-                        <div className="text-white font-medium">{app.name}</div>
-                        <div className="text-gray-400 text-sm">{app.position}</div>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-cyan-400 font-bold">{app.xp} XP</div>
-                        <div className={`px-2 py-1 rounded text-xs mt-1 ${
-                          app.status === 'New' ? 'bg-green-500/20 text-green-300' : 'bg-yellow-500/20 text-yellow-300'
-                        }`}>
-                          {app.status}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="text-gray-500 text-xs">{app.date}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Quick Actions */}
-            <div className="bg-white/5 border border-white/10 rounded-xl p-6">
-              <h3 className="text-xl font-bold mb-4">Quick Actions</h3>
-              <div className="space-y-3">
-                <button 
-                  onClick={() => navigate('/post-job')}
-                  className="w-full text-left p-3 bg-white/5 hover:bg-white/10 rounded-lg transition-all"
-                >
-                  <div className="font-medium text-white">Post New Job</div>
-                  <div className="text-sm text-gray-400">Create a new opening</div>
-                </button>
-                
-                <button 
-                  onClick={() => navigate('/employer-hub')}
-                  className="w-full text-left p-3 bg-white/5 hover:bg-white/10 rounded-lg transition-all"
-                >
-                  <div className="font-medium text-white">Review Applications</div>
-                  <div className="text-sm text-gray-400">See all candidates</div>
-                </button>
-                
-                <button 
-                  onClick={() => navigate('/profile')}
-                  className="w-full text-left p-3 bg-white/5 hover:bg-white/10 rounded-lg transition-all"
-                >
-                  <div className="font-medium text-white">Company Profile</div>
-                  <div className="text-sm text-gray-400">Update company info</div>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/** ===== GUIDES PAGE ===== */
-function Guides() {
-  const navigate = useNavigate();
-  
-  const careerArticles = [
-    {
-      title: "The Numbers Game: Why Applying to More Jobs Increases Your Success",
-      excerpt: "Learn why quantity often beats quality in job hunting and how to apply efficiently without sacrificing quality.",
-      category: "Job Search Strategy",
-      readTime: "5 min read",
-      featured: true
-    },
-    {
-      title: "How to Write a Resume That Gets Past ATS Systems",
-      excerpt: "Master the art of creating resumes that both human recruiters and AI systems will love.",
-      category: "Resume Writing",
-      readTime: "7 min read"
-    },
-    {
-      title: "Interview Preparation: The Complete Guide",
-      excerpt: "From research to follow-up, everything you need to ace your next interview.",
-      category: "Interviewing",
-      readTime: "8 min read"
-    },
-    {
-      title: "Networking for Introverts: Building Connections Your Way",
-      excerpt: "Effective networking strategies that don't require being the loudest person in the room.",
-      category: "Networking",
-      readTime: "6 min read"
-    },
-    {
-      title: "Salary Negotiation: Getting What You're Worth",
-      excerpt: "Proven techniques to negotiate better compensation without burning bridges.",
-      category: "Career Growth",
-      readTime: "6 min read"
+  useEffect(() => {
+    if (isLoggedIn && userType === 'employer' && userProfile?.id) {
+      loadEmployerJobs();
     }
-  ];
+  }, [isLoggedIn, userType, userProfile]);
+
+  const loadEmployerJobs = async () => {
+    try {
+      setLoading(true);
+      const response = await employerAPI.getEmployerJobs(userProfile.id);
+      setJobs(response);
+    } catch (error) {
+      setError('Failed to load jobs');
+      console.error('Error loading jobs:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadJobApplications = async (jobId) => {
+    try {
+      setLoading(true);
+      const response = await employerAPI.getJobApplications(jobId, userProfile.id);
+      setApplications(response.applications);
+      setSelectedJob(response);
+    } catch (error) {
+      setError('Failed to load applications');
+      console.error('Error loading applications:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updateApplicationStatus = async (applicantId, newStatus) => {
+    try {
+      await employerAPI.updateApplicationStatus(selectedJob._id, applicantId, newStatus, userProfile.id);
+      // Reload applications to get updated data
+      await loadJobApplications(selectedJob._id);
+    } catch (error) {
+      setError('Failed to update application status');
+      console.error('Error updating status:', error);
+    }
+  };
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'pending': return 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30';
+      case 'reviewed': return 'bg-blue-500/20 text-blue-300 border-blue-500/30';
+      case 'declined': return 'bg-red-500/20 text-red-300 border-red-500/30';
+      case 'accepted': return 'bg-green-500/20 text-green-300 border-green-500/30';
+      default: return 'bg-gray-500/20 text-gray-300 border-gray-500/30';
+    }
+  };
+
+  const getStatusText = (status) => {
+    switch (status) {
+      case 'pending': return 'Pending Review';
+      case 'reviewed': return 'Under Review';
+      case 'declined': return 'Declined';
+      case 'accepted': return 'Accepted';
+      default: return 'Unknown';
+    }
+  };
+
+  if (!isLoggedIn || userType !== 'employer') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white px-4 sm:px-6 py-12 sm:py-24">
+        <div className="max-w-4xl mx-auto text-center">
+          <h1 className="text-3xl sm:text-5xl font-bold mb-4 sm:mb-6">Access Denied</h1>
+          <p className="text-lg sm:text-xl text-gray-300">Please sign in as an employer to access this page.</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-[#0b0e1a] text-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl sm:text-5xl font-bold mb-6 bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">
-            Career Guides & Resources
-          </h1>
-          <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-            Everything you need to level up your career, from understanding XP to mastering job search strategies
-          </p>
-        </div>
-
-        {/* Featured Article - Numbers Game */}
-        <div className="bg-gradient-to-r from-cyan-500/10 to-purple-600/10 border border-cyan-500/20 rounded-xl p-8 mb-12">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-            <div>
-              <div className="inline-block px-3 py-1 bg-cyan-500/20 text-cyan-300 text-sm rounded-full mb-4">
-                Featured Article
-              </div>
-              <h2 className="text-3xl font-bold mb-4">
-                The Numbers Game: Why More Applications = More Success
-              </h2>
-              <p className="text-gray-300 text-lg mb-6">
-                In job hunting, quantity often beats quality. Learn why applying to more jobs increases your chances of landing the perfect role, and how to do it efficiently without sacrificing quality.
-              </p>
-              <div className="grid grid-cols-3 gap-4 mb-6">
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-cyan-400">85%</div>
-                  <div className="text-sm text-gray-400">Success rate with 50+ applications</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-purple-400">3x</div>
-                  <div className="text-sm text-gray-400">More interviews with volume approach</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-green-400">2.5x</div>
-                  <div className="text-sm text-gray-400">Faster job placement</div>
-                </div>
-              </div>
-              <button className="px-6 py-3 bg-gradient-to-r from-cyan-500 to-purple-600 text-white rounded-lg hover:from-cyan-600 hover:to-purple-700 transition-all font-semibold">
-                Read Full Article
-              </button>
-            </div>
-            <div className="bg-white/5 rounded-xl p-6">
-              <h3 className="text-xl font-bold mb-4 text-center">The Numbers Don't Lie</h3>
-              <div className="space-y-4">
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-300">1-10 applications</span>
-                  <span className="text-red-400">15% success rate</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-300">11-25 applications</span>
-                  <span className="text-yellow-400">35% success rate</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-300">26-50 applications</span>
-                  <span className="text-green-400">65% success rate</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-300">50+ applications</span>
-                  <span className="text-cyan-400">85% success rate</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* XP Guide Section */}
-        <div className="mb-12">
-          <h2 className="text-3xl font-bold mb-8 text-center">Understanding the XP System</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div className="bg-white/5 border border-white/10 rounded-xl p-6">
-              <div className="w-12 h-12 bg-gradient-to-r from-cyan-500 to-purple-600 rounded-lg flex items-center justify-center mb-4">
-                <Zap className="w-6 h-6 text-white" />
-              </div>
-              <h3 className="text-xl font-bold mb-3">How XP Works</h3>
-              <p className="text-gray-300 mb-4">
-                Earn XP through various career-building activities. The more you engage, the faster you level up and get priority visibility to employers.
-              </p>
-              <div className="text-sm text-cyan-400">
-                • Sign up: +25 XP<br/>
-                • Apply to jobs: +35 XP<br/>
-                • Complete profile: +50 XP<br/>
-                • Upload video CV: +200 XP
-              </div>
-            </div>
-
-            <div className="bg-white/5 border border-white/10 rounded-xl p-6">
-              <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-cyan-600 rounded-lg flex items-center justify-center mb-4">
-                <TrendingUp className="w-6 h-6 text-white" />
-              </div>
-              <h3 className="text-xl font-bold mb-3">Leveling Up</h3>
-              <p className="text-gray-300 mb-4">
-                Progress through 5 career levels, each unlocking new opportunities and priority placement in employer searches.
-              </p>
-              <div className="text-sm text-purple-400">
-                • Level 1: Basic visibility<br/>
-                • Level 3: Priority placement<br/>
-                • Level 5: Top-tier priority<br/>
-                • Elite status benefits
-              </div>
-            </div>
-
-            <div className="bg-white/5 border border-white/10 rounded-xl p-6">
-              <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-blue-600 rounded-lg flex items-center justify-center mb-4">
-                <Users className="w-6 h-6 text-white" />
-              </div>
-              <h3 className="text-xl font-bold mb-3">Employer Benefits</h3>
-              <p className="text-gray-300 mb-4">
-                Higher XP candidates appear first in employer searches, giving you a competitive advantage in the job market.
-              </p>
-              <div className="text-sm text-green-400">
-                • Level 1: Basic visibility<br/>
-                • Level 3: Priority placement<br/>
-                • Level 5: Top-tier priority<br/>
-                • Elite status benefits
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Career Advice Articles */}
-        <div>
-          <h2 className="text-3xl font-bold mb-8 text-center">Career Advice & Tips</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {careerArticles.slice(1).map((article, index) => (
-              <div key={index} className="bg-white/5 border border-white/10 rounded-xl p-6 hover:border-cyan-500/30 transition-all">
-                <div className="flex justify-between items-start mb-3">
-                  <span className="px-2 py-1 bg-cyan-500/20 text-cyan-300 text-xs rounded">
-                    {article.category}
-                  </span>
-                  <span className="text-sm text-gray-400">{article.readTime}</span>
-                </div>
-                <h3 className="text-xl font-bold mb-3 text-white">{article.title}</h3>
-                <p className="text-gray-300 mb-4">{article.excerpt}</p>
-                <button className="text-cyan-400 hover:text-cyan-300 transition-colors font-medium">
-                  Read More →
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Call to Action */}
-        <div className="text-center mt-16">
-          <div className="bg-gradient-to-r from-cyan-500/10 to-purple-600/10 border border-cyan-500/20 rounded-xl p-8">
-            <h3 className="text-2xl font-bold mb-4">Ready to Start Building XP?</h3>
-            <p className="text-gray-300 mb-6">
-              Apply to jobs, complete your profile, and start leveling up your career today.
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white px-4 sm:px-6 py-12 sm:py-24">
+      <div className="max-w-7xl mx-auto">
+        <div className="text-center mb-12 sm:mb-16">
+          <h1 className="text-3xl sm:text-5xl font-bold mb-4 sm:mb-6">Employer Dashboard</h1>
+          <p className="text-lg sm:text-xl text-gray-300">Manage your job postings and review applications</p>
+          <div className="mt-6 bg-cyan-500/10 border border-cyan-500/30 rounded-xl p-4 max-w-2xl mx-auto">
+            <p className="text-cyan-300 text-sm">
+              💡 <strong>Smart Sorting:</strong> Applications are automatically sorted by XP - higher XP candidates appear first until you review or decline them!
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button 
-                onClick={() => navigate('/jobs')}
-                className="px-6 py-3 bg-gradient-to-r from-cyan-500 to-purple-600 text-white rounded-lg hover:from-cyan-600 hover:to-purple-700 transition-all font-semibold"
-              >
-                Browse Jobs
-              </button>
-              <button 
-                onClick={() => navigate('/profile')}
-                className="px-6 py-3 bg-white/10 hover:bg-white/20 text-white rounded-lg border border-white/20 transition-all font-semibold"
-              >
-                Complete Profile
-              </button>
+          </div>
+        </div>
+
+        {error && (
+          <div className="bg-red-500/20 border border-red-500/30 rounded-xl p-4 mb-6 text-red-300">
+            {error}
+          </div>
+        )}
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
+          {/* Jobs List */}
+          <div className="lg:col-span-1">
+            <div className="bg-white/5 border border-white/10 rounded-xl p-6 sm:p-8">
+              <h2 className="text-2xl sm:text-3xl font-bold mb-6">Your Jobs</h2>
+              
+              {loading ? (
+                <div className="text-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-500 mx-auto"></div>
+                </div>
+              ) : jobs.length === 0 ? (
+                <p className="text-gray-400 text-center py-8">No jobs posted yet</p>
+              ) : (
+                <div className="space-y-4">
+                  {jobs.map((job) => (
+                    <div
+                      key={job._id}
+                      onClick={() => loadJobApplications(job._id)}
+                      className={`p-4 rounded-lg border cursor-pointer transition-all hover:bg-white/5 ${
+                        selectedJob?._id === job._id 
+                          ? 'border-cyan-500/50 bg-cyan-500/10' 
+                          : 'border-white/10 hover:border-white/20'
+                      }`}
+                    >
+                      <h3 className="font-semibold text-white mb-2">{job.title}</h3>
+                      <p className="text-sm text-gray-400 mb-2">{job.company}</p>
+                      <div className="flex justify-between text-xs text-gray-500">
+                        <span>{job.pendingApplications} pending</span>
+                        <span>{job.totalApplications} total</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Applications View */}
+          <div className="lg:col-span-2">
+            <div className="bg-white/5 border border-white/10 rounded-xl p-6 sm:p-8">
+              {!selectedJob ? (
+                <div className="text-center py-12">
+                  <h3 className="text-xl text-gray-400 mb-2">Select a Job</h3>
+                  <p className="text-gray-500">Choose a job from the left to view applications</p>
+                </div>
+              ) : (
+                <>
+                  <div className="flex justify-between items-center mb-6">
+                    <div>
+                      <h2 className="text-2xl sm:text-3xl font-bold">{selectedJob.jobTitle}</h2>
+                      <p className="text-gray-400">{selectedJob.company}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm text-gray-400">Applications</p>
+                      <p className="text-2xl font-bold text-cyan-500">{applications.length}</p>
+                    </div>
+                  </div>
+
+                  {loading ? (
+                    <div className="text-center py-8">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-500 mx-auto"></div>
+                    </div>
+                  ) : applications.length === 0 ? (
+                    <p className="text-gray-400 text-center py-8">No applications yet</p>
+                  ) : (
+                    <div className="space-y-4">
+                      {applications.map((application) => (
+                        <div
+                          key={application._id}
+                          className="bg-white/5 border border-white/10 rounded-lg p-4 sm:p-6"
+                        >
+                          <div className="flex justify-between items-start mb-4">
+                            <div>
+                              <h3 className="font-semibold text-white text-lg">
+                                {application.user.firstName} {application.user.lastName}
+                              </h3>
+                              <p className="text-gray-400">{application.user.email}</p>
+                            </div>
+                            <div className="text-right">
+                              <div className={`px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(application.status)}`}>
+                                {getStatusText(application.status)}
+                              </div>
+                              <div className="mt-2 text-center">
+                                <div className="text-2xl font-bold text-cyan-500">
+                                  {application.user.jobHuntXP}
+                                </div>
+                                <div className="text-xs text-gray-500">XP</div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="flex justify-between items-center text-sm text-gray-400 mb-4">
+                            <span>Applied: {new Date(application.appliedAt).toLocaleDateString()}</span>
+                            {application.reviewedAt && (
+                              <span>Reviewed: {new Date(application.reviewedAt).toLocaleDateString()}</span>
+                            )}
+                          </div>
+
+                          {application.status === 'pending' && (
+                            <div className="flex gap-3">
+                              <button
+                                onClick={() => updateApplicationStatus(application._id, 'reviewed')}
+                                className="px-4 py-2 bg-blue-500/20 text-blue-300 border border-blue-500/30 rounded-lg hover:bg-blue-500/30 transition-colors"
+                              >
+                                Mark as Reviewed
+                              </button>
+                              <button
+                                onClick={() => updateApplicationStatus(application._id, 'declined')}
+                                className="px-4 py-2 bg-red-500/20 text-red-300 border border-red-500/30 rounded-lg hover:bg-red-500/30 transition-colors"
+                              >
+                                Decline
+                              </button>
+                              <button
+                                onClick={() => updateApplicationStatus(application._id, 'accepted')}
+                                className="px-4 py-2 bg-green-500/20 text-green-300 border border-green-500/30 rounded-lg hover:bg-green-500/30 transition-colors"
+                              >
+                                Accept
+                              </button>
+                            </div>
+                          )}
+
+                          {application.status === 'reviewed' && (
+                            <div className="flex gap-3">
+                              <button
+                                onClick={() => updateApplicationStatus(application._id, 'declined')}
+                                className="px-4 py-2 bg-red-500/20 text-red-300 border border-red-500/30 rounded-lg hover:bg-red-500/30 transition-colors"
+                              >
+                                Decline
+                              </button>
+                              <button
+                                onClick={() => updateApplicationStatus(application._id, 'accepted')}
+                                className="px-4 py-2 bg-green-500/20 text-green-300 border border-green-500/30 rounded-lg hover:bg-green-500/30 transition-colors"
+                              >
+                                Accept
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </>
+              )}
             </div>
           </div>
         </div>
       </div>
     </div>
   );
-}
-
-export default App;
+};
