@@ -333,6 +333,10 @@ function AppProvider({ children }) {
   const [showEmployerAuthModal, setShowEmployerAuthModal] = useState(false);
   const [showXPNotification, setShowXPNotification] = useState(false);
   const [lastXPGain, setLastXPGain] = useState(0);
+  
+  // User databases for authentication
+  const [jobSeekerUsers, setJobSeekerUsers] = useState([]);
+  const [employerUsers, setEmployerUsers] = useState([]);
 
   const addJobHuntXP = (amount) => {
     setUserJobHuntXP(prev => prev + amount);
@@ -341,21 +345,64 @@ function AppProvider({ children }) {
     setTimeout(() => setShowXPNotification(false), 3000);
   };
 
+  const signup = (email, password, type, additionalData = {}) => {
+    // Check if user already exists
+    const existingUser = type === 'jobseeker' 
+      ? jobSeekerUsers.find(user => user.email === email)
+      : employerUsers.find(user => user.email === email);
+    
+    if (existingUser) {
+      alert('User already exists with this email. Please sign in instead.');
+      return false;
+    }
+    
+    // Create new user
+    const newUser = {
+      id: Date.now(),
+      email,
+      password, // In a real app, this would be hashed
+      type,
+      credits: type === 'employer' ? 2 : 0, // Employers get 2 free credits
+      xp: type === 'jobseeker' ? 0 : 0,
+      profile: additionalData,
+      createdAt: new Date().toISOString()
+    };
+    
+    // Add to appropriate database
+    if (type === 'jobseeker') {
+      setJobSeekerUsers(prev => [...prev, newUser]);
+    } else {
+      setEmployerUsers(prev => [...prev, newUser]);
+    }
+    
+    // Auto-login after signup
+    login(email, password, type);
+    return true;
+  };
+
   const login = (email, password, type) => {
-    // Simulate authentication
+    // Find user in appropriate database
+    const users = type === 'jobseeker' ? jobSeekerUsers : employerUsers;
+    const user = users.find(u => u.email === email && u.password === password);
+    
+    if (!user) {
+      alert('Invalid email or password. Please check your credentials and try again.');
+      return false;
+    }
+    
+    // Authentication successful
     setIsLoggedIn(true);
     setUserType(type);
-    // Give new users 2 free credits (worth $600)
-    setUserCredits(2);
-    if (type === 'jobseeker') {
-      addJobHuntXP(XP_ACTIONS.SIGNUP);
-    }
+    setUserCredits(user.credits);
+    setUserJobHuntXP(user.xp);
+    setUserProfile(user.profile);
+    
     // Close the appropriate modal
     setShowAuthModal(false);
     setShowEmployerAuthModal(false);
     
-    // Debug logging
-    console.log('Login successful:', { type, credits: 2 });
+    console.log('Login successful:', { type, email, credits: user.credits });
+    return true;
   };
 
   const logout = () => {
@@ -390,10 +437,40 @@ function AppProvider({ children }) {
     }
   }, [isLoggedIn, userType, userCredits, userJobHuntXP, userProfile]);
 
+  // Save user databases to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem('zeroxp_jobseekers', JSON.stringify(jobSeekerUsers));
+  }, [jobSeekerUsers]);
+
+  useEffect(() => {
+    localStorage.setItem('zeroxp_employers', JSON.stringify(employerUsers));
+  }, [employerUsers]);
+
   // Restore user state from localStorage on app start
   useEffect(() => {
     const savedUser = localStorage.getItem('zeroxp_user');
+    const savedJobSeekers = localStorage.getItem('zeroxp_jobseekers');
+    const savedEmployers = localStorage.getItem('zeroxp_employers');
+    
     console.log('Checking localStorage for saved user:', savedUser);
+    
+    // Restore user databases
+    if (savedJobSeekers) {
+      try {
+        setJobSeekerUsers(JSON.parse(savedJobSeekers));
+      } catch (error) {
+        console.error('Error restoring job seeker users:', error);
+      }
+    }
+    
+    if (savedEmployers) {
+      try {
+        setEmployerUsers(JSON.parse(savedEmployers));
+      } catch (error) {
+        console.error('Error restoring employer users:', error);
+      }
+    }
+    
     if (savedUser) {
       try {
         const userData = JSON.parse(savedUser);
@@ -437,6 +514,7 @@ function AppProvider({ children }) {
     lastXPGain,
     addJobHuntXP,
     login,
+    signup,
     logout,
     postJob,
     setUserProfile
@@ -447,7 +525,7 @@ function AppProvider({ children }) {
 
 /** ===== AUTH MODAL ===== */
 function AuthModal() {
-  const { showAuthModal, setShowAuthModal, login, setShowEmployerAuthModal } = useApp();
+  const { showAuthModal, setShowAuthModal, login, signup, setShowEmployerAuthModal } = useApp();
   const [isSignUp, setIsSignUp] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
   const [formData, setFormData] = useState({
@@ -457,7 +535,11 @@ function AuthModal() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    login(formData.email, formData.password, 'jobseeker');
+    if (isSignUp) {
+      signup(formData.email, formData.password, 'jobseeker');
+    } else {
+      login(formData.email, formData.password, 'jobseeker');
+    }
   };
 
   const handleInputChange = (e) => {
@@ -3736,7 +3818,7 @@ function useScrollAnimation() {
 }
 
 function EmployerAuthModal() {
-  const { showEmployerAuthModal, setShowEmployerAuthModal, login, setShowAuthModal } = useApp();
+  const { showEmployerAuthModal, setShowEmployerAuthModal, login, signup, setShowAuthModal } = useApp();
   const navigate = useNavigate();
   const [isSignUp, setIsSignUp] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
@@ -3748,10 +3830,21 @@ function EmployerAuthModal() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    login(formData.email, formData.password, 'employer');
-    setTimeout(() => {
-      navigate('/employer-welcome');
-    }, 100);
+    if (isSignUp) {
+      const success = signup(formData.email, formData.password, 'employer', { companyName: formData.companyName });
+      if (success) {
+        setTimeout(() => {
+          navigate('/employer-welcome');
+        }, 100);
+      }
+    } else {
+      const success = login(formData.email, formData.password, 'employer');
+      if (success) {
+        setTimeout(() => {
+          navigate('/employer-welcome');
+        }, 100);
+      }
+    }
   };
 
   const handleInputChange = (e) => {
