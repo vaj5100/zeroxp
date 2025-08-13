@@ -3,6 +3,57 @@ import { BrowserRouter, Routes, Route, Link, useNavigate } from 'react-router-do
 import { GraduationCap, Search, Zap, TrendingUp, MapPin, DollarSign, Users, X, ChevronDown } from 'lucide-react';
 import { employerAPI } from './api';
 
+// Reusable button animation function
+const animateButton = (e) => {
+  const target = e.currentTarget;
+  
+  // Add click animation
+  target.style.transform = 'scale(0.95)';
+  target.style.transition = 'transform 0.1s ease';
+  
+  // Add ripple effect
+  target.classList.add('ripple');
+  
+  // Reset after animation
+  setTimeout(() => {
+    target.style.transform = '';
+    target.style.transition = '';
+    target.classList.remove('ripple');
+  }, 300);
+};
+
+// Scroll observer hook
+function useScrollAnimation() {
+  const [isVisible, setIsVisible] = useState(false);
+  const ref = useRef(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+        }
+      },
+      {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+      }
+    );
+
+    if (ref.current) {
+      observer.observe(ref.current);
+    }
+
+    return () => {
+      if (ref.current) {
+        observer.unobserve(ref.current);
+      }
+    };
+  }, []);
+
+  return [ref, isVisible];
+}
+
 /** ===== CAREER PROGRESSION CONFIG ===== */
 const XP_ACTIONS = {
   SIGNUP: 25,
@@ -2009,15 +2060,10 @@ function PostJob() {
   const { userCredits, postJob, isLoggedIn, userType } = useApp();
   const nav = useNavigate();
   
-  const headerRef = useRef();
-  const stepsRef = useRef();
-  const creditsRef = useRef();
-  const formRef = useRef();
-  
-  const headerVisible = useScrollAnimation(headerRef);
-  const stepsVisible = useScrollAnimation(stepsRef);
-  const creditsVisible = useScrollAnimation(creditsRef);
-  const formVisible = useScrollAnimation(formRef);
+  const [headerRef, headerVisible] = useScrollAnimation();
+  const [stepsRef, stepsVisible] = useScrollAnimation();
+  const [creditsRef, creditsVisible] = useScrollAnimation();
+  const [formRef, formVisible] = useScrollAnimation();
   
   // Additional protection within the component
   useEffect(() => {
@@ -2573,15 +2619,10 @@ function PostJob() {
 }
 
 function Pricing() {
-  const headerRef = useRef();
-  const freeCreditsRef = useRef();
-  const packagesRef = useRef();
-  const howItWorksRef = useRef();
-  
-  const headerVisible = useScrollAnimation(headerRef);
-  const freeCreditsVisible = useScrollAnimation(freeCreditsRef);
-  const packagesVisible = useScrollAnimation(packagesRef);
-  const howItWorksVisible = useScrollAnimation(howItWorksRef);
+  const [headerRef, headerVisible] = useScrollAnimation();
+  const [freeCreditsRef, freeCreditsVisible] = useScrollAnimation();
+  const [packagesRef, packagesVisible] = useScrollAnimation();
+  const [howItWorksRef, howItWorksVisible] = useScrollAnimation();
 
   return (
     <div className="px-6 py-24 max-w-7xl mx-auto">
@@ -3860,57 +3901,6 @@ export default function App() {
       </AppProvider>
     </BrowserRouter>
   );
-}
-
-// Reusable button animation function
-const animateButton = (e) => {
-  const target = e.currentTarget;
-  
-  // Add click animation
-  target.style.transform = 'scale(0.95)';
-  target.style.transition = 'transform 0.1s ease';
-  
-  // Add ripple effect
-  target.classList.add('ripple');
-  
-  // Reset after animation
-  setTimeout(() => {
-    target.style.transform = '';
-    target.style.transition = '';
-    target.classList.remove('ripple');
-  }, 300);
-};
-
-// Scroll observer hook
-function useScrollAnimation() {
-  const [isVisible, setIsVisible] = useState(false);
-  const ref = useRef(null);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-        }
-      },
-      {
-        threshold: 0.1,
-        rootMargin: '0px 0px -50px 0px'
-      }
-    );
-
-    if (ref.current) {
-      observer.observe(ref.current);
-    }
-
-    return () => {
-      if (ref.current) {
-        observer.unobserve(ref.current);
-      }
-    };
-  }, []);
-
-  return [ref, isVisible];
 }
 
 function EmployerAuthModal() {
