@@ -3963,6 +3963,12 @@ function JobSeekerWelcome() {
 function Guides() {
   const navigate = useNavigate();
   
+  // Scroll animation refs
+  const [headerRef, headerVisible] = useScrollAnimation();
+  const [featuredRef, featuredVisible] = useScrollAnimation();
+  const [xpGuideRef, xpGuideVisible] = useScrollAnimation();
+  const [careerAdviceRef, careerAdviceVisible] = useScrollAnimation();
+  
   const careerArticles = [
     {
       title: "The Numbers Game: Why Applying to More Jobs Increases Your Success",
@@ -4001,17 +4007,17 @@ function Guides() {
     <div className="min-h-screen bg-[#0b0e1a] text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl sm:text-5xl font-bold mb-6 bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">
+        <div ref={headerRef} className={`text-center mb-12 animate-on-scroll ${headerVisible ? 'animate-in' : ''}`}>
+          <h1 className="text-4xl sm:text-5xl font-bold mb-6 bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent animate-on-scroll animate-in">
             Career Guides & Resources
           </h1>
-          <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+          <p className="text-xl text-gray-300 max-w-3xl mx-auto animate-on-scroll animate-in">
             Everything you need to level up your career, from understanding XP to mastering job search strategies
           </p>
         </div>
 
         {/* Featured Article - Numbers Game */}
-        <div className="bg-gradient-to-r from-cyan-500/10 to-purple-600/10 border border-cyan-500/20 rounded-xl p-8 mb-12">
+        <div ref={featuredRef} className={`bg-gradient-to-r from-cyan-500/10 to-purple-600/10 border border-cyan-500/20 rounded-xl p-8 mb-12 animate-on-scroll-scale ${featuredVisible ? 'animate-in' : ''}`}>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
             <div>
               <div className="inline-block px-3 py-1 bg-cyan-500/20 text-cyan-300 text-sm rounded-full mb-4">
@@ -4066,10 +4072,10 @@ function Guides() {
         </div>
 
         {/* XP Guide Section */}
-        <div className="mb-12">
+        <div ref={xpGuideRef} className={`mb-12 animate-on-scroll-scale ${xpGuideVisible ? 'animate-in' : ''}`}>
           <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold mb-4">Understanding the XP System</h2>
-            <p className="text-gray-300 mb-4">Learn how the XP system works and how to maximize your career growth</p>
+            <h2 className="text-3xl font-bold mb-4 animate-on-scroll animate-in">Understanding the XP System</h2>
+            <p className="text-gray-300 mb-4 animate-on-scroll animate-in">Learn how the XP system works and how to maximize your career growth</p>
             <button 
               onClick={() => navigate('/xp-guide')}
               className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-cyan-500 to-purple-600 text-white rounded-lg hover:from-cyan-600 hover:to-purple-700 transition-all font-semibold"
@@ -4079,7 +4085,7 @@ function Guides() {
             </button>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div className="bg-white/5 border border-white/10 rounded-xl p-6 hover:border-cyan-500/30 transition-all cursor-pointer" onClick={() => navigate('/xp-guide')}>
+            <div className="bg-white/5 border border-white/10 rounded-xl p-6 hover:border-cyan-500/30 transition-all cursor-pointer animate-on-scroll-scale animate-in" onClick={() => navigate('/xp-guide')}>
               <div className="w-12 h-12 bg-gradient-to-r from-cyan-500 to-purple-600 rounded-lg flex items-center justify-center mb-4">
                 <Zap className="w-6 h-6 text-white" />
               </div>
@@ -4098,7 +4104,7 @@ function Guides() {
               </div>
             </div>
 
-            <div className="bg-white/5 border border-white/10 rounded-xl p-6 hover:border-purple-500/30 transition-all cursor-pointer" onClick={() => navigate('/xp-guide')}>
+            <div className="bg-white/5 border border-white/10 rounded-xl p-6 hover:border-purple-500/30 transition-all cursor-pointer animate-on-scroll-scale animate-in" onClick={() => navigate('/xp-guide')}>
               <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-cyan-600 rounded-lg flex items-center justify-center mb-4">
                 <TrendingUp className="w-6 h-6 text-white" />
               </div>
@@ -4117,7 +4123,7 @@ function Guides() {
               </div>
             </div>
 
-            <div className="bg-white/5 border border-white/10 rounded-xl p-6 hover:border-green-500/30 transition-all cursor-pointer" onClick={() => navigate('/xp-guide')}>
+            <div className="bg-white/5 border border-white/10 rounded-xl p-6 hover:border-green-500/30 transition-all cursor-pointer animate-on-scroll-scale animate-in" onClick={() => navigate('/xp-guide')}>
               <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-blue-600 rounded-lg flex items-center justify-center mb-4">
                 <Users className="w-6 h-6 text-white" />
               </div>
@@ -4139,11 +4145,11 @@ function Guides() {
         </div>
 
         {/* Career Advice Articles */}
-        <div>
-          <h2 className="text-3xl font-bold mb-8 text-center">Career Advice & Tips</h2>
+        <div ref={careerAdviceRef} className={`animate-on-scroll-scale ${careerAdviceVisible ? 'animate-in' : ''}`}>
+          <h2 className="text-3xl font-bold mb-8 text-center animate-on-scroll animate-in">Career Advice & Tips</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {careerArticles.slice(1).map((article, index) => (
-              <div key={index} className="bg-white/5 border border-white/10 rounded-xl p-6 hover:border-cyan-500/30 transition-all">
+              <div key={index} className="bg-white/5 border border-white/10 rounded-xl p-6 hover:border-cyan-500/30 transition-all animate-on-scroll-scale animate-in">
                 <div className="flex justify-between items-start mb-3">
                   <span className="px-2 py-1 bg-cyan-500/20 text-cyan-300 text-xs rounded">
                     {article.category}
