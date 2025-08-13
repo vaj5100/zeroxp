@@ -3137,10 +3137,16 @@ function Pricing() {
 function EmployerWelcome() {
   const nav = useNavigate();
   const { setShowAuthModal } = useApp();
+  
+  // Scroll animation refs
+  const [heroRef, heroVisible] = useScrollAnimation();
+  const [featuresRef, featuresVisible] = useScrollAnimation();
+  const [ctaRef, ctaVisible] = useScrollAnimation();
+  const [howItWorksRef, howItWorksVisible] = useScrollAnimation();
 
   return (
     <div className="relative overflow-hidden">
-      <div className="relative px-6 py-24 sm:py-32 lg:px-8">
+      <div ref={heroRef} className={`relative px-6 py-24 sm:py-32 lg:px-8 ${heroVisible ? 'animate-on-scroll animate-in' : 'animate-on-scroll'}`}>
         <div className="mx-auto max-w-4xl text-center">
           <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-7xl mb-8 cyber-text">
             Welcome, <span className="bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">Employers</span>
@@ -3167,7 +3173,7 @@ function EmployerWelcome() {
             </div>
           </div>
 
-          <div className="flex flex-col md:flex-row items-center justify-center gap-6">
+          <div ref={ctaRef} className={`flex flex-col md:flex-row items-center justify-center gap-6 ${ctaVisible ? 'animate-on-scroll-scale animate-in' : 'animate-on-scroll-scale'}`}>
             <button onClick={(e) => {
               animateButton(e);
               setShowAuthModal(true);
@@ -3185,7 +3191,7 @@ function EmployerWelcome() {
       </div>
 
       {/* Features Section */}
-      <div className="max-w-7xl mx-auto px-6 pb-24">
+      <div ref={featuresRef} className={`max-w-7xl mx-auto px-6 pb-24 ${featuresVisible ? 'animate-on-scroll-scale animate-in' : 'animate-on-scroll-scale'}`}>
         <h2 className="text-3xl font-bold text-white text-center mb-12">Why Choose ZeroXP?</h2>
         <div className="grid md:grid-cols-2 gap-8">
           <div className="bg-white/5 border border-white/10 rounded-2xl p-8 shadow-neon">
@@ -3237,6 +3243,36 @@ function EmployerWelcome() {
               <li>• No recurring fees</li>
               <li>• Flexible scaling</li>
             </ul>
+          </div>
+        </div>
+      </div>
+
+      {/* How It Works Section */}
+      <div ref={howItWorksRef} className={`max-w-7xl mx-auto px-6 pb-24 ${howItWorksVisible ? 'animate-on-scroll-scale animate-in' : 'animate-on-scroll-scale'}`}>
+        <div className="bg-gradient-to-r from-purple-500/10 to-pink-500/10 border border-purple-500/30 rounded-2xl p-8">
+          <h2 className="text-3xl font-bold text-white mb-8 text-center">How It Works</h2>
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-purple-500/20 border border-purple-500/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-2xl font-bold text-purple-300">1</span>
+              </div>
+              <h3 className="text-xl font-semibold text-white mb-2">Post Jobs</h3>
+              <p className="text-gray-400">Create compelling job listings with our simple form</p>
+            </div>
+            <div className="text-center">
+              <div className="w-16 h-16 bg-pink-500/20 border border-pink-500/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-2xl font-bold text-pink-300">2</span>
+              </div>
+              <h3 className="text-xl font-semibold text-white mb-2">Review Candidates</h3>
+              <p className="text-gray-400">Browse applications ranked by XP and motivation</p>
+            </div>
+            <div className="text-center">
+              <div className="w-16 h-16 bg-cyan-500/20 border border-cyan-500/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-2xl font-bold text-cyan-300">3</span>
+              </div>
+              <h3 className="text-xl font-semibold text-white mb-2">Hire Talent</h3>
+              <p className="text-gray-400">Connect with pre-vetted entry-level candidates</p>
+            </div>
           </div>
         </div>
       </div>
