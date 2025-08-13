@@ -2088,8 +2088,11 @@ function PostJob() {
         <h1 className="text-3xl font-bold text-white mb-4">Access Restricted</h1>
         <p className="text-gray-300 mb-6">This page is only available to employers.</p>
         <button
-          onClick={() => nav('/')}
-          className="bg-gradient-to-r from-cyan-600 to-purple-700 hover:from-cyan-500 hover:to-purple-600 text-white px-6 py-3 rounded-lg font-semibold transition-all"
+          onClick={(e) => {
+            animateButton(e);
+            nav('/');
+          }}
+          className="animated-btn bg-gradient-to-r from-cyan-600 to-purple-700 hover:from-cyan-500 hover:to-purple-600 text-white px-6 py-3 rounded-lg font-semibold transition-all transform hover:scale-105 hover:shadow-lg hover:shadow-cyan-500/25 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:ring-offset-2 focus:ring-offset-black"
         >
           Back to Home
         </button>
@@ -2146,14 +2149,15 @@ function PostJob() {
       {userCredits !== undefined ? (
         <div className="bg-emerald-500/20 border border-emerald-500/30 rounded-xl p-4 mb-8">
           <div className="flex items-center justify-between">
-          <div>
+            <div>
             <span className="text-emerald-300 font-semibold">Available Credits: {userCredits}</span>
             <span className="text-gray-300 text-sm block">1 credit per job post</span>
           </div>
           {userCredits === 0 && (
             <Link 
               to="/pricing" 
-              className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors"
+              onClick={animateButton}
+              className="animated-btn bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors transform hover:scale-105 hover:shadow-lg hover:shadow-emerald-500/25 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:ring-offset-2 focus:ring-offset-black"
             >
               Buy Credits
             </Link>
@@ -2171,7 +2175,8 @@ function PostJob() {
                 </p>
                 <Link 
                   to="/pricing" 
-                  className="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors"
+                  onClick={animateButton}
+                  className="animated-btn bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors transform hover:scale-105 hover:shadow-lg hover:shadow-amber-500/25 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:ring-offset-2 focus:ring-offset-black"
                 >
                   View Credit Packages
                 </Link>
@@ -2190,14 +2195,18 @@ function PostJob() {
             </p>
             <div className="flex gap-4 justify-center">
               <button
-                onClick={() => window.location.href = '/employer-auth'}
-                className="bg-amber-600 hover:bg-amber-700 text-white px-6 py-2 rounded-lg text-sm font-semibold transition-colors"
+                onClick={(e) => {
+                  animateButton(e);
+                  window.location.href = '/employer-auth';
+                }}
+                className="animated-btn bg-amber-600 hover:bg-amber-700 text-white px-6 py-2 rounded-lg text-sm font-semibold transition-colors transform hover:scale-105 hover:shadow-lg hover:shadow-amber-500/25 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:ring-offset-2 focus:ring-offset-black"
               >
                 Sign In as Employer
               </button>
               <Link 
                 to="/pricing" 
-                className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2 rounded-lg text-sm font-semibold transition-colors"
+                onClick={animateButton}
+                className="animated-btn bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2 rounded-lg text-sm font-semibold transition-colors transform hover:scale-105 hover:shadow-lg hover:shadow-emerald-500/25 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:ring-offset-2 focus:ring-offset-black"
               >
                 View Pricing
               </Link>
