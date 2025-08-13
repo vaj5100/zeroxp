@@ -345,12 +345,17 @@ function AppProvider({ children }) {
     // Simulate authentication
     setIsLoggedIn(true);
     setUserType(type);
+    // Give new users 2 free credits (worth $600)
+    setUserCredits(2);
     if (type === 'jobseeker') {
       addJobHuntXP(XP_ACTIONS.SIGNUP);
     }
     // Close the appropriate modal
     setShowAuthModal(false);
     setShowEmployerAuthModal(false);
+    
+    // Debug logging
+    console.log('Login successful:', { type, credits: 2 });
   };
 
   const logout = () => {
@@ -359,7 +364,53 @@ function AppProvider({ children }) {
     setUserJobHuntXP(0);
     setUserProfile({});
     setUserCredits(100); // Reset credits
+    // Clear localStorage
+    localStorage.removeItem('zeroxp_user');
   };
+
+  // Save user state to localStorage whenever it changes
+  useEffect(() => {
+    if (isLoggedIn) {
+      // Small delay to ensure state is fully updated
+      const timeoutId = setTimeout(() => {
+        const userData = {
+          isLoggedIn,
+          userType,
+          userCredits,
+          userJobHuntXP,
+          userProfile
+        };
+        localStorage.setItem('zeroxp_user', JSON.stringify(userData));
+        console.log('Saving user data to localStorage:', userData);
+      }, 100);
+      
+      return () => clearTimeout(timeoutId);
+    } else {
+      console.log('User not logged in, clearing localStorage');
+    }
+  }, [isLoggedIn, userType, userCredits, userJobHuntXP, userProfile]);
+
+  // Restore user state from localStorage on app start
+  useEffect(() => {
+    const savedUser = localStorage.getItem('zeroxp_user');
+    console.log('Checking localStorage for saved user:', savedUser);
+    if (savedUser) {
+      try {
+        const userData = JSON.parse(savedUser);
+        console.log('Restoring user data:', userData);
+        setIsLoggedIn(userData.isLoggedIn || false);
+        setUserType(userData.userType || null);
+        setUserCredits(userData.userCredits || 100);
+        setUserJobHuntXP(userData.userJobHuntXP || 0);
+        setUserProfile(userData.userProfile || {});
+      } catch (error) {
+        console.error('Error restoring user data:', error);
+        localStorage.removeItem('zeroxp_user');
+      }
+    } else {
+      console.log('No saved user data found in localStorage');
+    }
+  }, []);
 
   const postJob = (job) => {
     const newJob = {
@@ -502,9 +553,13 @@ function AuthModal() {
 
 /** ===== HEADER (neon theme) ===== */
 function Header() {
-  const { isLoggedIn, userType, logout, setShowAuthModal, setShowEmployerAuthModal } = useApp();
+  const { isLoggedIn, userType, userCredits, logout, setShowAuthModal, setShowEmployerAuthModal } = useApp();
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false);
+  
+  // Debug logging
+  console.log('Header render:', { isLoggedIn, userType, isAccountMenuOpen });
 
   const handleLogin = (type) => {
     if (type === 'employer') {
@@ -519,7 +574,23 @@ function Header() {
     logout();
     navigate('/');
     setIsMobileMenuOpen(false);
+    setIsAccountMenuOpen(false);
   };
+
+  // Close account menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (isAccountMenuOpen && !event.target.closest('.account-menu')) {
+        setIsAccountMenuOpen(false);
+      }
+      if (isMobileMenuOpen && !event.target.closest('.mobile-menu')) {
+        setIsMobileMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isAccountMenuOpen, isMobileMenuOpen]);
 
   return (
     <header className="bg-black/50 backdrop-blur-xl border-b border-white/10 sticky top-0 z-40">
@@ -563,6 +634,12 @@ function Header() {
                 >
                   Post a Job
                 </Link>
+                <Link 
+                  to="/pricing" 
+                  className="text-emerald-400 hover:text-emerald-300 transition-colors py-2 text-sm"
+                >
+                  View Pricing
+                </Link>
                 <button
                   onClick={() => handleLogin('jobseeker')}
                   className="px-4 py-2 bg-gradient-to-r from-cyan-500 to-purple-600 text-white rounded-lg font-semibold hover:from-cyan-600 hover:to-purple-700 transition-all duration-300"
@@ -596,17 +673,57 @@ function Header() {
                   <>
                     <Link to="/post-job" className="text-gray-300 hover:text-white transition-colors py-2">Post Job</Link>
                     <Link to="/employer-hub" className="text-gray-300 hover:text-white transition-colors py-2">Employer Hub</Link>
+                    <Link to="/pricing" className="text-emerald-400 hover:text-emerald-300 transition-colors py-2">Pricing</Link>
+                    <span className="text-emerald-300 text-sm px-2 py-1 bg-emerald-500/10 rounded">
+                      Credits: {userCredits || 0}
+                    </span>
                   </>
                 )}
-                <span className="text-gray-400 text-sm px-2 py-1 bg-white/5 rounded">
-                  {userType === 'jobseeker' ? 'Job Seeker' : 'Employer'}
-                </span>
-                <button
-                  onClick={handleLogout}
-                  className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg font-semibold border border-white/20 transition-all duration-300"
-                >
-                  Sign Out
-                </button>
+                <div className="relative account-menu">
+                  <button 
+                    onClick={() => setIsAccountMenuOpen(!isAccountMenuOpen)}
+                    className="flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg font-semibold border border-white/20 transition-all duration-300"
+                  >
+                    <span className="text-gray-400 text-sm px-2 py-1 bg-white/5 rounded">
+                      {userType === 'jobseeker' ? 'Job Seeker' : 'Employer'}
+                    </span>
+                    <ChevronDown className={`w-4 h-4 transition-transform ${isAccountMenuOpen ? 'rotate-180' : ''}`} />
+                  </button>
+                  {isAccountMenuOpen && (
+                    <div className="absolute top-full right-0 bg-[#0b0e1a] border border-white/10 rounded-lg shadow-xl min-w-[200px] z-50">
+                      <Link 
+                        to="/profile" 
+                        className="block px-4 py-3 text-gray-300 hover:text-white hover:bg-white/5 transition-colors rounded-t-lg"
+                        onClick={() => setIsAccountMenuOpen(false)}
+                      >
+                        Profile
+                      </Link>
+                      <Link 
+                        to={userType === 'jobseeker' ? '/job-seeker-dashboard' : '/employer-dashboard'} 
+                        className="block px-4 py-3 text-gray-300 hover:text-white hover:bg-white/5 transition-colors"
+                        onClick={() => setIsAccountMenuOpen(false)}
+                      >
+                        My Account
+                      </Link>
+                      {userType === 'employer' && (
+                        <Link 
+                          to="/pricing" 
+                          className="block px-4 py-3 text-gray-300 hover:text-white hover:bg-white/5 transition-colors"
+                          onClick={() => setIsAccountMenuOpen(false)}
+                        >
+                          Buy Credits
+                        </Link>
+                      )}
+                      <div className="border-t border-white/10 my-1"></div>
+                      <button
+                        onClick={handleLogout}
+                        className="block w-full text-left px-4 py-3 text-gray-300 hover:text-white hover:bg-white/5 transition-colors rounded-b-lg"
+                      >
+                        Sign Out
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
             )}
           </div>
@@ -626,7 +743,7 @@ function Header() {
 
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
-          <div className="md:hidden mt-4 pb-4 border-t border-white/10">
+          <div className="md:hidden mt-4 pb-4 border-t border-white/10 mobile-menu">
             <div className="flex flex-col space-y-2 pt-4">
               {!isLoggedIn ? (
                 <>
@@ -667,6 +784,13 @@ function Header() {
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     Post a Job
+                  </Link>
+                  <Link 
+                    to="/pricing" 
+                    className="text-emerald-400 hover:text-emerald-300 transition-colors py-2 px-4 rounded-lg hover:bg-white/5 text-left"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    View Pricing
                   </Link>
                   <button
                     onClick={() => handleLogin('jobseeker')}
@@ -728,19 +852,51 @@ function Header() {
                       >
                         Employer Hub
                       </Link>
+                      <Link 
+                        to="/pricing" 
+                        className="text-emerald-400 hover:text-emerald-300 transition-colors py-2 px-4 rounded-lg hover:bg-white/5"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
+                        Pricing
+                      </Link>
+                      <span className="text-emerald-300 text-sm px-2 py-1 bg-emerald-500/10 rounded ml-4">
+                        Credits: {userCredits || 0}
+                      </span>
                     </>
                   )}
                   <div className="px-4 py-2">
-                    <span className="text-gray-400 text-sm px-2 py-1 bg-white/5 rounded">
-                      {userType === 'jobseeker' ? 'Job Seeker' : 'Employer'}
-                    </span>
+                    <div className="text-gray-300 font-medium mb-2">Account</div>
+                    <Link 
+                      to="/profile" 
+                      className="block text-gray-400 hover:text-white transition-colors py-2 px-4 rounded-lg hover:bg-white/5 ml-4"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      Profile
+                    </Link>
+                    <Link 
+                      to={userType === 'jobseeker' ? '/job-seeker-dashboard' : '/employer-dashboard'} 
+                      className="block text-gray-400 hover:text-white transition-colors py-2 px-4 rounded-lg hover:bg-white/5 ml-4"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      My Account
+                    </Link>
+                    {userType === 'employer' && (
+                      <Link 
+                        to="/pricing" 
+                        className="block text-gray-400 hover:text-white transition-colors py-2 px-4 rounded-lg hover:bg-white/5 ml-4"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
+                        Buy Credits
+                      </Link>
+                    )}
+                    <div className="border-t border-white/10 my-2 ml-4"></div>
+                    <button
+                      onClick={handleLogout}
+                      className="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg font-semibold border border-white/20 transition-all duration-300 text-left ml-4"
+                    >
+                      Sign Out
+                    </button>
                   </div>
-                  <button
-                    onClick={handleLogout}
-                    className="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg font-semibold border border-white/20 transition-all duration-300 text-left"
-                  >
-                    Sign Out
-                  </button>
                 </>
               )}
             </div>
@@ -1809,12 +1965,18 @@ function PostJob() {
   };
 
   const handleSubmit = () => {
+    if (userCredits === 0) {
+      alert('You need credits to post a job. You can start with 2 free credits or purchase more.');
+      nav('/pricing');
+      return;
+    }
+    
     const result = postJob(formData);
     if (result.error === 'NO_CREDITS') {
       alert('You need credits to post a job. Please purchase credits first.');
       nav('/pricing');
     } else {
-      alert('Job posted successfully!');
+      alert('Job posted successfully! 1 credit deducted.');
       nav('/jobs');
     }
   };
@@ -1865,9 +2027,39 @@ function PostJob() {
       {/* Credit Display */}
       <div className="bg-emerald-500/20 border border-emerald-500/30 rounded-xl p-4 mb-8">
         <div className="flex items-center justify-between">
-          <span className="text-emerald-300 font-semibold">Available Credits: {userCredits}</span>
-          <span className="text-gray-300 text-sm">1 credit per job post</span>
+          <div>
+            <span className="text-emerald-300 font-semibold">Available Credits: {userCredits}</span>
+            <span className="text-gray-300 text-sm block">1 credit per job post</span>
+          </div>
+          {userCredits === 0 && (
+            <Link 
+              to="/pricing" 
+              className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors"
+            >
+              Buy Credits
+            </Link>
+          )}
         </div>
+        
+        {userCredits === 0 && (
+          <div className="mt-4 p-4 bg-amber-500/10 border border-amber-500/30 rounded-lg">
+            <div className="flex items-start gap-3">
+              <div className="text-amber-400 text-lg">⚠️</div>
+              <div>
+                <p className="text-amber-300 font-semibold mb-2">No credits available</p>
+                <p className="text-amber-200 text-sm mb-3">
+                  You need credits to post a job. New employers get 2 free credits worth $600.
+                </p>
+                <Link 
+                  to="/pricing" 
+                  className="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors"
+                >
+                  View Credit Packages
+                </Link>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {!showPreview ? (
@@ -2098,136 +2290,167 @@ function Pricing() {
   return (
     <div className="px-6 py-24 max-w-7xl mx-auto">
       <div className="text-center mb-16">
-        <h1 className="text-5xl font-extrabold text-white mb-6">Simple, Transparent Pricing</h1>
+        <h1 className="text-5xl font-extrabold text-white mb-6">Job Posting Credits</h1>
         <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-          Reach motivated entry-level talent with our straightforward credit system. No hidden fees, no complicated tiers.
+          Post jobs with our flexible credit system. Buy more credits, save more per job posting.
         </p>
       </div>
 
-      <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-        {/* Starter Plan */}
-        <div className="bg-white/5 border border-white/10 rounded-2xl p-8 shadow-accent hover:shadow-neon transition-all">
+      {/* Free Credits Info */}
+      <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-2xl p-8 mb-12 max-w-4xl mx-auto">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-emerald-300 mb-4">Start with Free Credits</h2>
+          <p className="text-gray-300 mb-4">
+            New employers get <span className="text-emerald-300 font-semibold">2 free job postings</span> worth $600
+          </p>
+          <p className="text-gray-400 text-sm">
+            Returning employers receive 1 free credit every 6 months
+          </p>
+        </div>
+      </div>
+
+      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+        {/* Starter Pack */}
+        <div className="bg-white/5 border border-white/10 rounded-2xl p-6 hover:border-cyan-500/30 transition-all">
           <div className="text-center mb-6">
-            <h3 className="text-2xl font-bold text-white mb-2">Starter</h3>
-            <div className="text-4xl font-bold text-cyan-300 mb-2">$399</div>
-            <p className="text-gray-400">Perfect for small teams</p>
+            <h3 className="text-xl font-bold text-white mb-2">Starter</h3>
+            <div className="text-3xl font-bold text-cyan-300 mb-1">$300</div>
+            <p className="text-gray-400 text-sm">1 credit</p>
+            <p className="text-gray-500 text-xs">$300 per job</p>
           </div>
-          <div className="space-y-4 mb-8">
-            <div className="flex items-center gap-3">
-              <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
-              <span className="text-white">5 job credits</span>
+          <div className="space-y-3 mb-6">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-cyan-400 rounded-full"></div>
+              <span className="text-white text-sm">1 job posting</span>
             </div>
-            <div className="flex items-center gap-3">
-              <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
-              <span className="text-white">30-day job listings</span>
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-cyan-400 rounded-full"></div>
+              <span className="text-white text-sm">30-day listing</span>
             </div>
-            <div className="flex items-center gap-3">
-              <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
-              <span className="text-white">Basic candidate search</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
-              <span className="text-white">Email support</span>
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-cyan-400 rounded-full"></div>
+              <span className="text-white text-sm">Basic support</span>
             </div>
           </div>
-          <button className="w-full bg-gradient-to-r from-cyan-600 to-purple-700 hover:from-cyan-500 hover:to-purple-600 text-white py-3 rounded-lg font-semibold shadow-neon">
+          <button className="w-full bg-gradient-to-r from-cyan-600 to-purple-700 hover:from-cyan-500 hover:to-purple-600 text-white py-3 rounded-lg font-semibold transition-all">
             Get Started
           </button>
         </div>
 
-        {/* Professional Plan */}
-        <div className="bg-gradient-to-br from-cyan-500/10 to-purple-500/10 border border-cyan-500/30 rounded-2xl p-8 shadow-neon relative">
-          <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-            <span className="bg-gradient-to-r from-cyan-500 to-purple-600 text-white px-4 py-1 rounded-full text-sm font-semibold">
-              Most Popular
+        {/* Growth Pack */}
+        <div className="bg-gradient-to-br from-cyan-500/10 to-purple-500/10 border border-cyan-500/30 rounded-2xl p-6 relative">
+          <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+            <span className="bg-gradient-to-r from-cyan-500 to-purple-600 text-white px-3 py-1 rounded-full text-xs font-semibold">
+              Popular
             </span>
           </div>
           <div className="text-center mb-6">
-            <h3 className="text-2xl font-bold text-white mb-2">Professional</h3>
-            <div className="text-4xl font-bold text-cyan-300 mb-2">$1,199</div>
-            <p className="text-gray-400">For growing companies</p>
+            <h3 className="text-xl font-bold text-white mb-2">Growth</h3>
+            <div className="text-3xl font-bold text-cyan-300 mb-1">$1,199</div>
+            <p className="text-gray-400 text-sm">5 credits</p>
+            <p className="text-emerald-400 text-xs font-semibold">Save $301</p>
+            <p className="text-gray-500 text-xs">$239 per job</p>
           </div>
-          <div className="space-y-4 mb-8">
-            <div className="flex items-center gap-3">
+          <div className="space-y-3 mb-6">
+            <div className="flex items-center gap-2">
               <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
-              <span className="text-white">15 job credits</span>
+              <span className="text-white text-sm">5 job postings</span>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
               <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
-              <span className="text-white">60-day job listings</span>
+              <span className="text-white text-sm">60-day listings</span>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
               <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
-              <span className="text-white">Advanced candidate search</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
-              <span className="text-white">XP-based candidate ranking</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
-              <span className="text-white">Priority support</span>
+              <span className="text-white text-sm">Priority support</span>
             </div>
           </div>
-          <button className="w-full bg-gradient-to-r from-cyan-600 to-purple-700 hover:from-cyan-500 hover:to-purple-600 text-white py-3 rounded-lg font-semibold shadow-neon">
-            Get Professional
+          <button className="w-full bg-gradient-to-r from-cyan-600 to-purple-700 hover:from-cyan-500 hover:to-purple-600 text-white py-3 rounded-lg font-semibold transition-all">
+            Choose Growth
           </button>
         </div>
 
-        {/* Enterprise Plan */}
-        <div className="bg-white/5 border border-white/10 rounded-2xl p-8 shadow-accent hover:shadow-neon transition-all">
+        {/* Scale Pack */}
+        <div className="bg-white/5 border border-white/10 rounded-2xl p-6 hover:border-purple-500/30 transition-all">
           <div className="text-center mb-6">
-            <h3 className="text-2xl font-bold text-white mb-2">Enterprise</h3>
-            <div className="text-4xl font-bold text-cyan-300 mb-2">$2,999</div>
-            <p className="text-gray-400">For large organizations</p>
+            <h3 className="text-xl font-bold text-white mb-2">Scale</h3>
+            <div className="text-3xl font-bold text-purple-300 mb-1">$2,999</div>
+            <p className="text-gray-400 text-sm">15 credits</p>
+            <p className="text-emerald-400 text-xs font-semibold">Save $1,501</p>
+            <p className="text-gray-500 text-xs">$199 per job</p>
           </div>
-          <div className="space-y-4 mb-8">
-            <div className="flex items-center gap-3">
-              <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
-              <span className="text-white">50 job credits</span>
+          <div className="space-y-3 mb-6">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+              <span className="text-white text-sm">15 job postings</span>
             </div>
-            <div className="flex items-center gap-3">
-              <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
-              <span className="text-white">90-day job listings</span>
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+              <span className="text-white text-sm">90-day listings</span>
             </div>
-            <div className="flex items-center gap-3">
-              <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
-              <span className="text-white">Full candidate database access</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
-              <span className="text-white">Custom candidate filtering</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
-              <span className="text-white">Dedicated account manager</span>
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+              <span className="text-white text-sm">Advanced analytics</span>
             </div>
           </div>
-          <button className="w-full bg-gradient-to-r from-cyan-600 to-purple-700 hover:from-cyan-500 hover:to-purple-600 text-white py-3 rounded-lg font-semibold shadow-neon">
-            Contact Sales
+          <button className="w-full bg-gradient-to-r from-purple-600 to-cyan-700 hover:from-purple-500 hover:to-cyan-600 text-white py-3 rounded-lg font-semibold transition-all">
+            Choose Scale
+          </button>
+        </div>
+
+        {/* Enterprise Pack */}
+        <div className="bg-gradient-to-br from-purple-500/10 to-emerald-500/10 border border-purple-500/30 rounded-2xl p-6">
+          <div className="text-center mb-6">
+            <h3 className="text-xl font-bold text-white mb-2">Enterprise</h3>
+            <div className="text-3xl font-bold text-emerald-300 mb-1">$8,999</div>
+            <p className="text-gray-400 text-sm">50 credits</p>
+            <p className="text-emerald-400 text-xs font-semibold">Save $3,001</p>
+            <p className="text-gray-500 text-xs">$179 per job</p>
+          </div>
+          <div className="space-y-3 mb-6">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
+              <span className="text-white text-sm">50 job postings</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
+              <span className="text-white text-sm">120-day listings</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
+              <span className="text-white text-sm">Dedicated support</span>
+            </div>
+          </div>
+          <button className="w-full bg-gradient-to-r from-emerald-600 to-purple-700 hover:from-emerald-500 hover:to-purple-600 text-white py-3 rounded-lg font-semibold transition-all">
+            Choose Enterprise
           </button>
         </div>
       </div>
 
-      {/* FAQ Section */}
-      <div className="mt-20 max-w-4xl mx-auto">
-        <h2 className="text-3xl font-bold text-white text-center mb-12">Frequently Asked Questions</h2>
-        <div className="space-y-6">
-          <div className="bg-white/5 border border-white/10 rounded-xl p-6 shadow-accent">
-            <h3 className="text-xl font-semibold text-white mb-3">How do credits work?</h3>
-            <p className="text-gray-300">Each job posting costs 1 credit. Credits never expire and can be used anytime. You can purchase additional credits at any time.</p>
+      {/* How It Works */}
+      <div className="mt-16 text-center">
+        <h2 className="text-3xl font-bold text-white mb-8">How Credits Work</h2>
+        <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+          <div className="text-center">
+            <div className="w-16 h-16 bg-cyan-500/20 border border-cyan-500/30 rounded-full flex items-center justify-center mx-auto mb-4">
+              <span className="text-2xl font-bold text-cyan-300">1</span>
+            </div>
+            <h3 className="text-xl font-semibold text-white mb-2">Buy Credits</h3>
+            <p className="text-gray-400">Choose a credit package that fits your hiring needs</p>
           </div>
-          <div className="bg-white/5 border border-white/10 rounded-xl p-6 shadow-accent">
-            <h3 className="text-xl font-semibold text-white mb-3">What makes ZeroXP different?</h3>
-            <p className="text-gray-300">We focus exclusively on entry-level talent and use a gamified XP system to surface the most motivated candidates. Higher XP candidates get priority visibility.</p>
+          <div className="text-center">
+            <div className="w-16 h-16 bg-purple-500/20 border border-purple-500/30 rounded-full flex items-center justify-center mx-auto mb-4">
+              <span className="text-2xl font-bold text-purple-300">2</span>
+            </div>
+            <h3 className="text-xl font-semibold text-white mb-2">Post Jobs</h3>
+            <p className="text-gray-400">Use 1 credit per job posting - credits never expire</p>
           </div>
-          <div className="bg-white/5 border border-white/10 rounded-xl p-6 shadow-accent">
-            <h3 className="text-xl font-semibold text-white mb-3">Can I cancel anytime?</h3>
-            <p className="text-gray-300">Yes! All plans are one-time purchases with no recurring fees. Use your credits at your own pace.</p>
-          </div>
-          <div className="bg-white/5 border border-white/10 rounded-xl p-6 shadow-accent">
-            <h3 className="text-xl font-semibold text-white mb-3">What if I need more credits?</h3>
-            <p className="text-gray-300">You can purchase additional credits at any time. Contact us for custom enterprise packages with unlimited credits.</p>
+          <div className="text-center">
+            <div className="w-16 h-16 bg-emerald-500/20 border border-emerald-500/30 rounded-full flex items-center justify-center mx-auto mb-4">
+              <span className="text-2xl font-bold text-emerald-300">3</span>
+            </div>
+            <h3 className="text-xl font-semibold text-white mb-2">Hire Talent</h3>
+            <p className="text-gray-400">Access our pool of motivated entry-level candidates</p>
           </div>
         </div>
       </div>
@@ -3652,7 +3875,24 @@ const EmployerDashboard = () => {
         <div className="text-center mb-12 sm:mb-16">
           <h1 className="text-3xl sm:text-5xl font-bold mb-4 sm:mb-6">Employer Dashboard</h1>
           <p className="text-lg sm:text-xl text-gray-300">Manage your job postings and review applications</p>
-          <div className="mt-6 bg-cyan-500/10 border border-cyan-500/30 rounded-xl p-4 max-w-2xl mx-auto">
+          
+          {/* Credit Status */}
+          <div className="mt-6 bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-4 max-w-2xl mx-auto mb-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-emerald-300 font-semibold">Available Credits: {userCredits || 0}</p>
+                <p className="text-gray-400 text-sm">1 credit per job posting</p>
+              </div>
+              <Link 
+                to="/pricing" 
+                className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors"
+              >
+                Buy Credits
+              </Link>
+            </div>
+          </div>
+          
+          <div className="bg-cyan-500/10 border border-cyan-500/30 rounded-xl p-4 max-w-2xl mx-auto">
             <p className="text-cyan-300 text-sm">
               💡 <strong>Smart Sorting:</strong> Applications are automatically sorted by XP - higher XP candidates appear first until you review or decline them!
             </p>
@@ -3664,6 +3904,89 @@ const EmployerDashboard = () => {
             {error}
           </div>
         )}
+
+        {/* Credit Management Section */}
+        <div className="grid lg:grid-cols-3 gap-6 mb-8">
+          <div className="lg:col-span-2">
+            <div className="bg-white/5 border border-white/10 rounded-xl p-6">
+              <h2 className="text-2xl font-bold text-white mb-4">Recent Job Postings</h2>
+              {loading ? (
+                <div className="text-center py-8">
+                  <div className="text-gray-400">Loading jobs...</div>
+                </div>
+              ) : jobs.length === 0 ? (
+                <div className="text-center py-8">
+                  <div className="text-gray-400 mb-4">No job postings yet</div>
+                  <Link 
+                    to="/post-job" 
+                    className="bg-gradient-to-r from-cyan-600 to-purple-700 hover:from-cyan-500 hover:to-purple-600 text-white px-6 py-2 rounded-lg font-semibold transition-all"
+                  >
+                    Post Your First Job
+                  </Link>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {jobs.slice(0, 3).map((job) => (
+                    <div key={job._id} className="bg-white/5 border border-white/10 rounded-lg p-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h3 className="text-white font-semibold">{job.title}</h3>
+                          <p className="text-gray-400 text-sm">{job.company}</p>
+                        </div>
+                        <button
+                          onClick={() => loadJobApplications(job._id)}
+                          className="bg-cyan-600 hover:bg-cyan-700 text-white px-3 py-1 rounded text-sm transition-colors"
+                        >
+                          View Applications
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                  {jobs.length > 3 && (
+                    <div className="text-center pt-4">
+                      <Link 
+                        to="/employer-hub" 
+                        className="text-cyan-400 hover:text-cyan-300 text-sm"
+                      >
+                        View all {jobs.length} jobs →
+                      </Link>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="bg-white/5 border border-white/10 rounded-xl p-6">
+            <h2 className="text-2xl font-bold text-white mb-4">Credit Management</h2>
+            <div className="space-y-4">
+              <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-lg p-4">
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-emerald-300 mb-2">{userCredits || 0}</div>
+                  <div className="text-emerald-200 text-sm">Available Credits</div>
+                </div>
+              </div>
+              
+              <div className="space-y-3">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-gray-400">Free credits used:</span>
+                  <span className="text-white">2/2</span>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-gray-400">Paid credits used:</span>
+                  <span className="text-white">{Math.max(0, (userCredits || 0) - 2)}</span>
+                </div>
+              </div>
+
+              <Link 
+                to="/pricing" 
+                className="w-full bg-gradient-to-r from-emerald-600 to-cyan-700 hover:from-emerald-500 hover:to-cyan-600 text-white py-3 rounded-lg font-semibold text-center block transition-all"
+              >
+                Buy More Credits
+              </Link>
+            </div>
+          </div>
+        </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
           {/* Jobs List */}
@@ -3815,3 +4138,4 @@ const EmployerDashboard = () => {
     </div>
   );
 };
+
