@@ -2037,7 +2037,7 @@ function PostJob() {
       {/* Credit Display - Only show after sign-in */}
       {userCredits !== undefined ? (
         <div className="bg-emerald-500/20 border border-emerald-500/30 rounded-xl p-4 mb-8">
-        <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between">
           <div>
             <span className="text-emerald-300 font-semibold">Available Credits: {userCredits}</span>
             <span className="text-gray-300 text-sm block">1 credit per job post</span>
@@ -2205,6 +2205,16 @@ function PostJob() {
                 />
               </div>
               <div>
+                <label className="block text-white font-semibold mb-2">Application Instructions (Optional)</label>
+                <textarea
+                  name="applicationInstructions"
+                  value={formData.applicationInstructions}
+                  onChange={handleChange}
+                  className="w-full bg-transparent border border-white/10 rounded-lg p-3 text-white placeholder-gray-500 min-h-[80px]"
+                  placeholder="How should candidates apply? Any specific instructions or requirements..."
+                />
+              </div>
+              <div>
                 <label className="block text-white font-semibold mb-2">Skills/Tags</label>
                 <div className="flex gap-2 mb-3">
                   <input
@@ -2233,6 +2243,46 @@ function PostJob() {
             </div>
           )}
 
+          {currentStep === 4 && (
+            <div className="space-y-6">
+              <h2 className="text-2xl font-bold text-white mb-6">Review & Submit</h2>
+              
+              {/* Quick Review Cards */}
+              <div className="grid md:grid-cols-2 gap-4 mb-6">
+                <div className="bg-white/5 border border-white/10 rounded-lg p-4">
+                  <h4 className="text-cyan-300 font-semibold mb-2">Basic Info</h4>
+                  <div className="space-y-2 text-sm text-gray-300">
+                    <div><span className="text-gray-400">Title:</span> {formData.title || 'Not provided'}</div>
+                    <div><span className="text-gray-400">Company:</span> {formData.company || 'Not provided'}</div>
+                    <div><span className="text-gray-400">Location:</span> {formData.location || 'Not provided'}</div>
+                    <div><span className="text-gray-400">Salary:</span> {formData.salary || 'Not provided'}</div>
+                  </div>
+                </div>
+                
+                <div className="bg-white/5 border border-white/10 rounded-lg p-4">
+                  <h4 className="text-emerald-300 font-semibold mb-2">Job Details</h4>
+                  <div className="space-y-2 text-sm text-gray-300">
+                    <div><span className="text-gray-400">Type:</span> {formData.type || 'Full Time'}</div>
+                    <div><span className="text-gray-400">Skills:</span> {formData.tags.length || 0} tags</div>
+                    <div><span className="text-gray-400">Description:</span> {formData.description ? '✓' : '✗'}</div>
+                    <div><span className="text-gray-400">Requirements:</span> {formData.requirements ? '✓' : '✗'}</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Final Check */}
+              <div className="bg-gradient-to-r from-cyan-500/10 to-purple-500/10 border border-cyan-500/20 rounded-lg p-4">
+                <h4 className="text-white font-semibold mb-3">Final Check</h4>
+                <div className="text-gray-300 text-sm space-y-1">
+                  <div>✓ All required fields completed</div>
+                  <div>✓ Job description detailed</div>
+                  <div>✓ Skills and requirements specified</div>
+                  <div>✓ Ready for posting</div>
+                </div>
+              </div>
+            </div>
+          )}
+
           <div className="flex justify-between mt-8">
             <button
               onClick={() => setCurrentStep(prev => Math.max(1, prev - 1))}
@@ -2242,12 +2292,21 @@ function PostJob() {
               Previous
             </button>
             <div className="flex gap-4">
-              <button
-                onClick={() => setShowPreview(true)}
-                className="bg-white/10 hover:bg-white/20 text-white px-6 py-2 rounded-lg"
-              >
-                Preview
-              </button>
+              {currentStep === 4 ? (
+                <button
+                  onClick={() => setShowPreview(true)}
+                  className="bg-gradient-to-r from-emerald-600 to-cyan-600 hover:from-emerald-500 hover:to-cyan-500 text-white px-6 py-2 rounded-lg font-semibold"
+                >
+                  View Full Preview
+                </button>
+              ) : (
+                <button
+                  onClick={() => setShowPreview(true)}
+                  className="bg-white/10 hover:bg-white/20 text-white px-6 py-2 rounded-lg"
+                >
+                  Preview
+                </button>
+              )}
               <button
                 onClick={() => setCurrentStep(prev => Math.min(4, prev + 1))}
                 disabled={userCredits === undefined}
@@ -2264,48 +2323,96 @@ function PostJob() {
         </div>
       ) : (
         <div className="bg-white/5 border border-white/10 rounded-2xl p-8">
-          <h2 className="text-2xl font-bold text-white mb-6">Job Preview</h2>
-          <div className="space-y-6">
+          <h2 className="text-2xl font-bold text-white mb-6">Job Preview - Review Everything</h2>
+          
+          {/* Header Section */}
+          <div className="bg-gradient-to-r from-cyan-500/10 to-purple-500/10 border border-cyan-500/20 rounded-xl p-6 mb-6">
             <div className="flex items-center gap-4 mb-4">
-              <h3 className="text-2xl font-semibold text-white">{formData.title}</h3>
+              <h3 className="text-2xl font-semibold text-white">{formData.title || 'Job Title'}</h3>
               <span className="bg-emerald-500/20 text-emerald-300 px-3 py-1 rounded-full text-sm font-medium border border-emerald-500/30">
-                {formData.type}
+                {formData.type || 'Full Time'}
               </span>
+            </div>
+            <div className="grid md:grid-cols-3 gap-4 text-gray-300">
+              <div className="flex items-center gap-2">
+                <span className="text-cyan-300 font-semibold">🏢</span>
+                <span className="font-semibold text-cyan-300">{formData.company || 'Company Name'}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-emerald-300">📍</span>
+                <span>{formData.location || 'Location'}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-purple-300">💰</span>
+                <span>{formData.salary || 'Salary Range'}</span>
+              </div>
+            </div>
+          </div>
 
+          {/* Content Sections */}
+          <div className="space-y-6">
+            {/* Job Description */}
+            <div className="bg-white/5 border border-white/10 rounded-lg p-4">
+              <h4 className="text-white font-semibold mb-3 flex items-center gap-2">
+                <span className="text-cyan-300">📝</span>
+                Job Description
+              </h4>
+              <p className="text-gray-300 leading-relaxed">
+                {formData.description || 'No description provided'}
+              </p>
             </div>
-            <div className="flex flex-wrap items-center gap-6 text-gray-300 mb-4">
-              <span className="font-semibold text-cyan-300">{formData.company}</span>
-              <span className="flex items-center gap-2">📍 {formData.location}</span>
-              <span className="flex items-center gap-2">💰 {formData.salary}</span>
+
+            {/* Requirements */}
+            <div className="bg-white/5 border border-white/10 rounded-lg p-4">
+              <h4 className="text-white font-semibold mb-3 flex items-center gap-2">
+                <span className="text-emerald-300">🎯</span>
+                Requirements
+              </h4>
+              <p className="text-gray-300 leading-relaxed">
+                {formData.requirements || 'No specific requirements listed'}
+              </p>
             </div>
-            <div>
-              <h4 className="text-white font-semibold mb-2">Description</h4>
-              <p className="text-gray-300 leading-relaxed">{formData.description}</p>
+
+            {/* Benefits */}
+            <div className="bg-white/5 border border-white/10 rounded-lg p-4">
+              <h4 className="text-white font-semibold mb-3 flex items-center gap-2">
+                <span className="text-purple-300">🎁</span>
+                Benefits
+              </h4>
+              <p className="text-gray-300 leading-relaxed">
+                {formData.benefits || 'No benefits listed'}
+              </p>
             </div>
-            {formData.requirements && (
-              <div>
-                <h4 className="text-white font-semibold mb-2">Requirements</h4>
-                <p className="text-gray-300 leading-relaxed">{formData.requirements}</p>
-              </div>
-            )}
-            {formData.benefits && (
-              <div>
-                <h4 className="text-white font-semibold mb-2">Benefits</h4>
-                <p className="text-gray-300 leading-relaxed">{formData.benefits}</p>
-              </div>
-            )}
-            {formData.tags.length > 0 && (
-              <div>
-                <h4 className="text-white font-semibold mb-2">Skills</h4>
+
+            {/* Skills/Tags */}
+            <div className="bg-white/5 border border-white/10 rounded-lg p-4">
+              <h4 className="text-white font-semibold mb-3 flex items-center gap-2">
+                <span className="text-orange-300">🔧</span>
+                Skills & Technologies
+              </h4>
+              {formData.tags.length > 0 ? (
                 <div className="flex flex-wrap gap-2">
                   {formData.tags.map(tag => (
-                    <span key={tag} className="bg-white/10 text-gray-200 px-3 py-1 rounded-full text-sm border border-white/20">
+                    <span key={tag} className="bg-gradient-to-r from-cyan-500/20 to-purple-500/20 text-cyan-300 px-3 py-1 rounded-full text-sm border border-cyan-500/30">
                       {tag}
                     </span>
                   ))}
                 </div>
-              </div>
-            )}
+              ) : (
+                <p className="text-gray-400 italic">No skills or technologies specified</p>
+              )}
+            </div>
+
+            {/* Application Instructions */}
+            <div className="bg-white/5 border border-white/10 rounded-lg p-4">
+              <h4 className="text-white font-semibold mb-3 flex items-center gap-2">
+                <span className="text-yellow-300">📋</span>
+                Application Instructions
+              </h4>
+              <p className="text-gray-300 leading-relaxed">
+                {formData.applicationInstructions || 'Standard application process'}
+              </p>
+            </div>
           </div>
           <div className="flex justify-between mt-8">
             <button
