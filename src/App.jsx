@@ -557,7 +557,7 @@ function Header() {
                     </Link>
                   </div>
                 </div>
-                <Link to="/pricing" className="text-gray-300 hover:text-white transition-colors py-2">Pricing</Link>
+                <Link to="/pricing" className="text-gray-500 hover:text-gray-400 transition-colors py-2 text-sm">Pricing</Link>
                 <button
                   onClick={() => handleLogin('employer')}
                   className="text-gray-400 hover:text-gray-300 transition-colors text-sm py-2"
@@ -664,7 +664,7 @@ function Header() {
                   </div>
                   <Link 
                     to="/pricing" 
-                    className="text-gray-300 hover:text-white transition-colors py-2 px-4 rounded-lg hover:bg-white/5"
+                    className="text-gray-500 hover:text-gray-400 transition-colors py-2 px-4 rounded-lg hover:bg-white/5 text-sm"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     Pricing
