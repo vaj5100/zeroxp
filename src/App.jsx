@@ -2888,6 +2888,216 @@ function MyXP() {
   );
 }
 
+/** ===== GUIDES PAGE ===== */
+function Guides() {
+  const navigate = useNavigate();
+  
+  const careerArticles = [
+    {
+      title: "The Numbers Game: Why Applying to More Jobs Increases Your Success",
+      excerpt: "Learn why quantity often beats quality in job hunting and how to apply efficiently without sacrificing quality.",
+      category: "Job Search Strategy",
+      readTime: "5 min read",
+      featured: true
+    },
+    {
+      title: "How to Write a Resume That Gets Past ATS Systems",
+      excerpt: "Master the art of creating resumes that both human recruiters and AI systems will love.",
+      category: "Resume Writing",
+      readTime: "7 min read"
+    },
+    {
+      title: "Interview Preparation: The Complete Guide",
+      excerpt: "From research to follow-up, everything you need to ace your next interview.",
+      category: "Interviewing",
+      readTime: "8 min read"
+    },
+    {
+      title: "Networking for Introverts: Building Connections Your Way",
+      excerpt: "Effective networking strategies that don't require being the loudest person in the room.",
+      category: "Networking",
+      readTime: "6 min read"
+    },
+    {
+      title: "Salary Negotiation: Getting What You're Worth",
+      excerpt: "Proven techniques to negotiate better compensation without burning bridges.",
+      category: "Career Growth",
+      readTime: "6 min read"
+    }
+  ];
+
+  return (
+    <div className="min-h-screen bg-[#0b0e1a] text-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Header */}
+        <div className="text-center mb-12">
+          <h1 className="text-4xl sm:text-5xl font-bold mb-6 bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">
+            Career Guides & Resources
+          </h1>
+          <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+            Everything you need to level up your career, from understanding XP to mastering job search strategies
+          </p>
+        </div>
+
+        {/* Featured Article - Numbers Game */}
+        <div className="bg-gradient-to-r from-cyan-500/10 to-purple-600/10 border border-cyan-500/20 rounded-xl p-8 mb-12">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+            <div>
+              <div className="inline-block px-3 py-1 bg-cyan-500/20 text-cyan-300 text-sm rounded-full mb-4">
+                Featured Article
+              </div>
+              <h2 className="text-3xl font-bold mb-4">
+                The Numbers Game: Why More Applications = More Success
+              </h2>
+              <p className="text-gray-300 text-lg mb-6">
+                In job hunting, quantity often beats quality. Learn why applying to more jobs increases your chances of landing the perfect role, and how to do it efficiently without sacrificing quality.
+              </p>
+              <div className="grid grid-cols-3 gap-4 mb-6">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-cyan-400">85%</div>
+                  <div className="text-sm text-gray-400">Success rate with 50+ applications</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-purple-400">3x</div>
+                  <div className="text-sm text-gray-400">More interviews with volume approach</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-green-400">2.5x</div>
+                  <div className="text-sm text-gray-400">Faster job placement</div>
+                </div>
+              </div>
+              <button className="px-6 py-3 bg-gradient-to-r from-cyan-500 to-purple-600 text-white rounded-lg hover:from-cyan-600 hover:to-purple-700 transition-all font-semibold">
+                Read Full Article
+              </button>
+            </div>
+            <div className="bg-white/5 rounded-xl p-6">
+              <h3 className="text-xl font-bold mb-4 text-center">The Numbers Don't Lie</h3>
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-300">1-10 applications</span>
+                  <span className="text-red-400">15% success rate</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-300">11-25 applications</span>
+                  <span className="text-yellow-400">35% success rate</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-300">26-50 applications</span>
+                  <span className="text-green-400">65% success rate</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-300">50+ applications</span>
+                  <span className="text-cyan-400">85% success rate</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* XP Guide Section */}
+        <div className="mb-12">
+          <h2 className="text-3xl font-bold mb-8 text-center">Understanding the XP System</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="bg-white/5 border border-white/10 rounded-xl p-6">
+              <div className="w-12 h-12 bg-gradient-to-r from-cyan-500 to-purple-600 rounded-lg flex items-center justify-center mb-4">
+                <Zap className="w-6 h-6 text-white" />
+              </div>
+              <h3 className="text-xl font-bold mb-3">How XP Works</h3>
+              <p className="text-gray-300 mb-4">
+                Earn XP through various career-building activities. The more you engage, the faster you level up and get priority visibility to employers.
+              </p>
+              <div className="text-sm text-cyan-400">
+                • Sign up: +25 XP<br/>
+                • Apply to jobs: +35 XP<br/>
+                • Complete profile: +50 XP<br/>
+                • Upload video CV: +200 XP
+              </div>
+            </div>
+
+            <div className="bg-white/5 border border-white/10 rounded-xl p-6">
+              <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-cyan-600 rounded-lg flex items-center justify-center mb-4">
+                <TrendingUp className="w-6 h-6 text-white" />
+              </div>
+              <h3 className="text-xl font-bold mb-3">Leveling Up</h3>
+              <p className="text-gray-300 mb-4">
+                Progress through 5 career levels, each unlocking new opportunities and priority placement in employer searches.
+              </p>
+              <div className="text-sm text-purple-400">
+                • Level 1: Basic visibility<br/>
+                • Level 3: Priority placement<br/>
+                • Level 5: Top-tier priority<br/>
+                • Elite status benefits
+              </div>
+            </div>
+
+            <div className="bg-white/5 border border-white/10 rounded-xl p-6">
+              <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-blue-600 rounded-lg flex items-center justify-center mb-4">
+                <Users className="w-6 h-6 text-white" />
+              </div>
+              <h3 className="text-xl font-bold mb-3">Employer Benefits</h3>
+              <p className="text-gray-300 mb-4">
+                Higher XP candidates appear first in employer searches, giving you a competitive advantage in the job market.
+              </p>
+              <div className="text-sm text-green-400">
+                • Level 1: Basic visibility<br/>
+                • Level 3: Priority placement<br/>
+                • Level 5: Top-tier priority<br/>
+                • Elite status benefits
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Career Advice Articles */}
+        <div>
+          <h2 className="text-3xl font-bold mb-8 text-center">Career Advice & Tips</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {careerArticles.slice(1).map((article, index) => (
+              <div key={index} className="bg-white/5 border border-white/10 rounded-xl p-6 hover:border-cyan-500/30 transition-all">
+                <div className="flex justify-between items-start mb-3">
+                  <span className="px-2 py-1 bg-cyan-500/20 text-cyan-300 text-xs rounded">
+                    {article.category}
+                  </span>
+                  <span className="text-sm text-gray-400">{article.readTime}</span>
+                </div>
+                <h3 className="text-xl font-bold mb-3 text-white">{article.title}</h3>
+                <p className="text-gray-300 mb-4">{article.excerpt}</p>
+                <button className="text-cyan-400 hover:text-cyan-300 transition-colors font-medium">
+                  Read More →
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Call to Action */}
+        <div className="text-center mt-16">
+          <div className="bg-gradient-to-r from-cyan-500/10 to-purple-600/10 border border-cyan-500/20 rounded-xl p-8">
+            <h3 className="text-2xl font-bold mb-4">Ready to Start Building XP?</h3>
+            <p className="text-gray-300 mb-6">
+              Apply to jobs, complete your profile, and start level up your career today.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <button 
+                onClick={() => navigate('/jobs')}
+                className="px-6 py-3 bg-gradient-to-r from-cyan-500 to-purple-600 text-white rounded-lg hover:from-cyan-600 hover:to-purple-700 transition-all font-semibold"
+              >
+                Browse Jobs
+              </button>
+              <button 
+                onClick={() => navigate('/profile')}
+                className="px-6 py-3 bg-white/10 hover:bg-white/20 text-white rounded-lg border border-white/20 transition-all font-semibold"
+              >
+                Complete Profile
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function JobSeekerWelcome() {
   const { setShowAuthModal } = useApp();
   const nav = useNavigate();
