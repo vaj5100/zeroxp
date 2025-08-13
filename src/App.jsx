@@ -721,8 +721,11 @@ function Header() {
                 </Link>
 
                 <button
-                  onClick={() => handleLogin('jobseeker')}
-                  className="px-4 py-2 bg-gradient-to-r from-cyan-500 to-purple-600 text-white rounded-lg font-semibold hover:from-cyan-600 hover:to-purple-700 transition-all duration-300"
+                  onClick={(e) => {
+                    animateButton(e);
+                    handleLogin('jobseeker');
+                  }}
+                  className="animated-btn px-4 py-2 bg-gradient-to-r from-cyan-500 to-purple-600 text-white rounded-lg font-semibold hover:from-cyan-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-cyan-500/25 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:ring-offset-2 focus:ring-offset-black"
                 >
                   Sign In
                 </button>
@@ -871,8 +874,11 @@ function Header() {
                   </Link>
 
                   <button
-                    onClick={() => handleLogin('jobseeker')}
-                    className="bg-gradient-to-r from-cyan-500 to-purple-600 text-white px-4 py-2 rounded-lg font-semibold hover:from-cyan-600 hover:to-purple-700 transition-all duration-300 text-left"
+                    onClick={(e) => {
+                      animateButton(e);
+                      handleLogin('jobseeker');
+                    }}
+                    className="animated-btn bg-gradient-to-r from-cyan-500 to-purple-600 text-white px-4 py-2 rounded-lg font-semibold hover:from-cyan-600 hover:to-purple-700 transition-all duration-300 text-left transform hover:scale-105 hover:shadow-lg hover:shadow-cyan-500/25 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:ring-offset-2 focus:ring-offset-black"
                   >
                     Sign In
                   </button>
@@ -2774,10 +2780,16 @@ function EmployerWelcome() {
           </div>
 
           <div className="flex flex-col md:flex-row items-center justify-center gap-6">
-            <button onClick={() => setShowAuthModal(true)} className="bg-gradient-to-r from-purple-600 to-pink-700 hover:from-purple-500 hover:to-pink-600 text-white px-8 py-4 rounded-lg font-semibold text-lg min-w-[200px] shadow-magenta cyber-border">
+            <button onClick={(e) => {
+              animateButton(e);
+              setShowAuthModal(true);
+            }} className="animated-btn bg-gradient-to-r from-purple-600 to-pink-700 hover:from-purple-500 hover:to-pink-600 text-white px-8 py-4 rounded-lg font-semibold text-lg min-w-[200px] shadow-magenta cyber-border transform hover:scale-105 hover:shadow-lg hover:shadow-purple-500/25 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:ring-offset-2 focus:ring-offset-black">
               Get Started
             </button>
-            <button onClick={() => nav('/pricing')} className="bg-white/10 hover:bg-white/20 text-white px-8 py-4 rounded-lg font-semibold text-lg border border-white/20 min-w-[200px] shadow-accent cyber-border">
+            <button onClick={(e) => {
+              animateButton(e);
+              nav('/pricing');
+            }} className="animated-btn bg-white/10 hover:bg-white/20 text-white px-8 py-4 rounded-lg font-semibold text-lg border border-white/20 min-w-[200px] shadow-accent cyber-border transform hover:scale-105 hover:shadow-lg hover:shadow-white/25 focus:outline-none focus:ring-2 focus:ring-white/50 focus:ring-offset-2 focus:ring-offset-black">
               View Pricing
             </button>
         </div>
@@ -3446,8 +3458,11 @@ function JobSeekerWelcome() {
             Stop feeling invisible. Start building your XP and get the attention you deserve from employers.
           </p>
           <button 
-            onClick={() => setShowAuthModal(true)}
-            className="bg-gradient-to-r from-cyan-500 to-purple-600 text-white px-8 py-3 rounded-lg font-semibold hover:from-cyan-600 hover:to-purple-700 transition-all duration-300"
+            onClick={(e) => {
+              animateButton(e);
+              setShowAuthModal(true);
+            }}
+            className="animated-btn bg-gradient-to-r from-cyan-500 to-purple-600 text-white px-8 py-3 rounded-lg font-semibold hover:from-cyan-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-cyan-500/25 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:ring-offset-2 focus:ring-offset-black"
           >
             Start Your Journey
           </button>
@@ -3459,8 +3474,11 @@ function JobSeekerWelcome() {
             Browse available jobs and see the opportunities waiting for you. You can always sign up later to start earning XP.
           </p>
           <button 
-            onClick={() => nav('/jobs')}
-            className="bg-white/10 hover:bg-white/20 text-white px-8 py-3 rounded-lg font-semibold border border-white/20 transition-all duration-300"
+            onClick={(e) => {
+              animateButton(e);
+              nav('/jobs');
+            }}
+            className="animated-btn bg-white/10 hover:bg-white/20 text-white px-8 py-3 rounded-lg font-semibold border border-white/20 transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-white/25 focus:outline-none focus:ring-2 focus:ring-white/50 focus:ring-offset-2 focus:ring-offset-black"
           >
             Browse Jobs
           </button>
