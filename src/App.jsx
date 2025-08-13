@@ -628,12 +628,7 @@ function Header() {
                     </Link>
                   </div>
                 </div>
-                <Link 
-                  to="/post-job" 
-                  className="px-4 py-2 bg-gradient-to-r from-green-500 to-orange-500 text-white rounded-lg font-semibold hover:from-green-600 hover:to-orange-600 transition-all duration-300"
-                >
-                  Post a Job
-                </Link>
+
 
                 <button
                   onClick={() => handleLogin('jobseeker')}
@@ -773,20 +768,8 @@ function Header() {
                       Career Advice
                     </Link>
                   </div>
-                  <Link 
-                    to="/post-job" 
-                    className="bg-gradient-to-r from-green-500 to-orange-500 text-white px-4 py-2 rounded-lg font-semibold hover:from-green-600 hover:to-orange-600 transition-all duration-300 text-left"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    Post a Job
-                  </Link>
-                  <Link 
-                    to="/pricing" 
-                    className="text-emerald-400 hover:text-emerald-300 transition-colors py-2 px-4 rounded-lg hover:bg-white/5 text-left"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    View Pricing
-                  </Link>
+
+
                   <button
                     onClick={() => handleLogin('jobseeker')}
                     className="bg-gradient-to-r from-cyan-500 to-purple-600 text-white px-4 py-2 rounded-lg font-semibold hover:from-cyan-600 hover:to-purple-700 transition-all duration-300 text-left"
@@ -1917,8 +1900,16 @@ function Candidates() {
 }
 
 function PostJob() {
-  const { userCredits, postJob } = useApp();
+  const { userCredits, postJob, isLoggedIn, userType } = useApp();
   const nav = useNavigate();
+  
+  // Additional protection within the component
+  useEffect(() => {
+    if (isLoggedIn && userType !== 'employer') {
+      nav('/');
+      return;
+    }
+  }, [isLoggedIn, userType, nav]);
   const [formData, setFormData] = useState({
     title: '',
     company: '',
@@ -1988,6 +1979,23 @@ function PostJob() {
     { number: 3, title: 'Settings', description: 'Type, level, and benefits' },
     { number: 4, title: 'Review', description: 'Preview and submit' }
   ];
+
+  // Don't render the form if user is not an employer
+  if (isLoggedIn && userType !== 'employer') {
+    return (
+      <div className="px-6 py-24 max-w-4xl mx-auto text-center">
+        <div className="text-amber-400 text-6xl mb-4">🔐</div>
+        <h1 className="text-3xl font-bold text-white mb-4">Access Restricted</h1>
+        <p className="text-gray-300 mb-6">This page is only available to employers.</p>
+        <button
+          onClick={() => nav('/')}
+          className="bg-gradient-to-r from-cyan-600 to-purple-700 hover:from-cyan-500 hover:to-purple-600 text-white px-6 py-3 rounded-lg font-semibold transition-all"
+        >
+          Back to Home
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="px-6 py-24 max-w-4xl mx-auto">
@@ -3617,6 +3625,52 @@ function Guides() {
   );
 }
 
+// Protected Route Component for Employers
+function ProtectedEmployerRoute({ children }) {
+  const { isLoggedIn, userType } = useApp();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!isLoggedIn) {
+      navigate('/employer');
+      return;
+    }
+    
+    if (userType !== 'employer') {
+      navigate('/');
+      return;
+    }
+  }, [isLoggedIn, userType, navigate]);
+
+  if (!isLoggedIn || userType !== 'employer') {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-amber-400 text-6xl mb-4">🔐</div>
+          <h1 className="text-2xl font-bold text-white mb-4">Access Restricted</h1>
+          <p className="text-gray-300 mb-6">This page is only available to employers.</p>
+          <div className="space-y-3">
+            <button
+              onClick={() => navigate('/employer')}
+              className="block w-full bg-gradient-to-r from-cyan-600 to-purple-700 hover:from-cyan-500 hover:to-purple-600 text-white px-6 py-3 rounded-lg font-semibold transition-all"
+            >
+              Sign In as Employer
+            </button>
+            <button
+              onClick={() => navigate('/')}
+              className="block w-full bg-white/10 hover:bg-white/20 text-white px-6 py-3 rounded-lg font-semibold transition-all"
+            >
+              Back to Home
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return children;
+}
+
 /** ===== ROOT APP ===== */
 export default function App() {
   return (
@@ -3634,12 +3688,12 @@ export default function App() {
             <Route path="/guides" element={<Guides />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/candidates" element={<Candidates />} />
-            <Route path="/post-job" element={<PostJob />} />
+            <Route path="/post-job" element={<ProtectedEmployerRoute><PostJob /></ProtectedEmployerRoute>} />
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/employer" element={<EmployerWelcome />} />
-            <Route path="/employer-welcome" element={<EmployerWelcomePage />} />
-            <Route path="/employer-hub" element={<EmployerHub />} />
-            <Route path="/employer-dashboard" element={<EmployerDashboard />} />
+            <Route path="/employer-welcome" element={<ProtectedEmployerRoute><EmployerWelcomePage /></ProtectedEmployerRoute>} />
+            <Route path="/employer-hub" element={<ProtectedEmployerRoute><EmployerHub /></ProtectedEmployerRoute>} />
+            <Route path="/employer-dashboard" element={<ProtectedEmployerRoute><EmployerDashboard /></ProtectedEmployerRoute>} />
             <Route path="/my-xp" element={<MyXP />} />
             <Route path="/job-seeker-welcome" element={<JobSeekerWelcome />} />
           </Routes>
