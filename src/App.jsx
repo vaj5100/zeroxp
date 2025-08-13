@@ -2009,6 +2009,16 @@ function PostJob() {
   const { userCredits, postJob, isLoggedIn, userType } = useApp();
   const nav = useNavigate();
   
+  const headerRef = useRef();
+  const stepsRef = useRef();
+  const creditsRef = useRef();
+  const formRef = useRef();
+  
+  const headerVisible = useScrollAnimation(headerRef);
+  const stepsVisible = useScrollAnimation(stepsRef);
+  const creditsVisible = useScrollAnimation(creditsRef);
+  const formVisible = useScrollAnimation(formRef);
+  
   // Additional protection within the component
   useEffect(() => {
     if (isLoggedIn && userType !== 'employer') {
@@ -2108,13 +2118,13 @@ function PostJob() {
 
   return (
     <div className="px-6 py-24 max-w-4xl mx-auto">
-      <div className="mb-8">
+      <div ref={headerRef} className={`mb-8 ${headerVisible ? 'animate-on-scroll animate-in' : 'animate-on-scroll'}`}>
         <h1 className="text-4xl font-extrabold text-white mb-2">Post a Job</h1>
         <p className="text-gray-300">Reach motivated entry-level talent with your job posting</p>
       </div>
 
       {/* Progress Steps */}
-      <div className="mb-8">
+      <div ref={stepsRef} className={`mb-8 ${stepsVisible ? 'animate-on-scroll-scale animate-in' : 'animate-on-scroll-scale'}`}>
         <div className="flex items-center justify-between">
           {steps.map((step, index) => (
             <div key={step.number} className="flex items-center">
@@ -2153,7 +2163,7 @@ function PostJob() {
 
       {/* Credit Display - Only show after sign-in */}
       {userCredits !== undefined ? (
-        <div className="bg-emerald-500/20 border border-emerald-500/30 rounded-xl p-4 mb-8">
+        <div ref={creditsRef} className={`bg-emerald-500/20 border border-emerald-500/30 rounded-xl p-4 mb-8 ${creditsVisible ? 'animate-on-scroll-scale animate-in' : 'animate-on-scroll-scale'}`}>
           <div className="flex items-center justify-between">
             <div>
             <span className="text-emerald-300 font-semibold">Available Credits: {userCredits}</span>
@@ -2192,7 +2202,7 @@ function PostJob() {
         )}
       </div>
       ) : (
-        <div className="bg-amber-500/20 border border-amber-500/30 rounded-xl p-4 mb-8">
+        <div ref={creditsRef} className={`bg-amber-500/20 border border-amber-500/30 rounded-xl p-4 mb-8 ${creditsVisible ? 'animate-on-scroll-scale animate-in' : 'animate-on-scroll-scale'}`}>
           <div className="text-center">
             <div className="text-amber-400 text-2xl mb-3">🔐</div>
             <h3 className="text-amber-300 font-semibold mb-2">Sign in to continue</h3>
@@ -2222,7 +2232,7 @@ function PostJob() {
       )}
 
       {!showPreview ? (
-        <div className="bg-white/5 border border-white/10 rounded-2xl p-8">
+        <div ref={formRef} className={`bg-white/5 border border-white/10 rounded-2xl p-8 ${formVisible ? 'animate-on-scroll-scale animate-in' : 'animate-on-scroll-scale'}`}>
           {currentStep === 1 && (
             <div className="space-y-6">
               <h2 className="text-2xl font-bold text-white mb-6">Basic Information</h2>
@@ -2563,9 +2573,19 @@ function PostJob() {
 }
 
 function Pricing() {
+  const headerRef = useRef();
+  const freeCreditsRef = useRef();
+  const packagesRef = useRef();
+  const howItWorksRef = useRef();
+  
+  const headerVisible = useScrollAnimation(headerRef);
+  const freeCreditsVisible = useScrollAnimation(freeCreditsRef);
+  const packagesVisible = useScrollAnimation(packagesRef);
+  const howItWorksVisible = useScrollAnimation(howItWorksRef);
+
   return (
     <div className="px-6 py-24 max-w-7xl mx-auto">
-      <div className="text-center mb-16">
+      <div ref={headerRef} className={`text-center mb-16 ${headerVisible ? 'animate-on-scroll animate-in' : 'animate-on-scroll'}`}>
         <h1 className="text-5xl font-extrabold text-white mb-6">Job Posting Credits</h1>
         <p className="text-xl text-gray-300 max-w-3xl mx-auto">
           Post jobs with our flexible credit system. Buy more credits, save more per job posting.
@@ -2573,7 +2593,7 @@ function Pricing() {
       </div>
 
       {/* Free Credits Info */}
-      <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-2xl p-8 mb-12 max-w-4xl mx-auto">
+      <div ref={freeCreditsRef} className={`bg-emerald-500/10 border border-emerald-500/30 rounded-2xl p-8 mb-12 max-w-4xl mx-auto ${freeCreditsVisible ? 'animate-on-scroll-scale animate-in' : 'animate-on-scroll-scale'}`}>
         <div className="text-center">
           <h2 className="text-2xl font-bold text-emerald-300 mb-4">Start with Free Credits</h2>
           <p className="text-gray-300 mb-4">
@@ -2585,7 +2605,7 @@ function Pricing() {
         </div>
       </div>
 
-      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+      <div ref={packagesRef} className={`grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto ${packagesVisible ? 'animate-on-scroll-scale animate-in' : 'animate-on-scroll-scale'}`}>
         {/* Starter Pack */}
         <div className="bg-white/5 border border-white/10 rounded-2xl p-6 hover:border-cyan-500/30 transition-all">
           <div className="text-center mb-6">
@@ -2716,7 +2736,7 @@ function Pricing() {
       </div>
 
       {/* How It Works */}
-      <div className="mt-16 text-center">
+      <div ref={howItWorksRef} className={`mt-16 text-center ${howItWorksVisible ? 'animate-on-scroll animate-in' : 'animate-on-scroll'}`}>
         <h2 className="text-3xl font-bold text-white mb-8">How Credits Work</h2>
         <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
           <div className="text-center">
