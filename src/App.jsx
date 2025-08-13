@@ -634,12 +634,7 @@ function Header() {
                 >
                   Post a Job
                 </Link>
-                <Link 
-                  to="/pricing" 
-                  className="text-emerald-400 hover:text-emerald-300 transition-colors py-2 text-sm"
-                >
-                  View Pricing
-                </Link>
+
                 <button
                   onClick={() => handleLogin('jobseeker')}
                   className="px-4 py-2 bg-gradient-to-r from-cyan-500 to-purple-600 text-white rounded-lg font-semibold hover:from-cyan-600 hover:to-purple-700 transition-all duration-300"
@@ -1965,6 +1960,12 @@ function PostJob() {
   };
 
   const handleSubmit = () => {
+    if (userCredits === undefined) {
+      alert('You need to sign in as an employer to post a job.');
+      nav('/employer-auth');
+      return;
+    }
+    
     if (userCredits === 0) {
       alert('You need credits to post a job. You can start with 2 free credits or purchase more.');
       nav('/pricing');
@@ -2000,13 +2001,16 @@ function PostJob() {
         <div className="flex items-center justify-between">
           {steps.map((step, index) => (
             <div key={step.number} className="flex items-center">
-              <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold ${
-                currentStep >= step.number 
-                  ? 'bg-gradient-to-r from-cyan-500 to-purple-600 text-white' 
-                  : 'bg-white/10 text-gray-400'
-              }`}>
+              <button
+                onClick={() => setCurrentStep(step.number)}
+                className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold transition-all duration-300 hover:scale-110 ${
+                  currentStep >= step.number 
+                    ? 'bg-gradient-to-r from-cyan-500 to-purple-600 text-white cursor-pointer' 
+                    : 'bg-white/10 text-gray-400 cursor-pointer hover:bg-white/20'
+                }`}
+              >
                 {step.number}
-              </div>
+              </button>
               {index < steps.length - 1 && (
                 <div className={`w-16 h-1 mx-2 ${
                   currentStep > step.number ? 'bg-gradient-to-r from-cyan-500 to-purple-600' : 'bg-white/10'
@@ -2017,15 +2021,22 @@ function PostJob() {
         </div>
         <div className="flex justify-between mt-2">
           {steps.map(step => (
-            <div key={step.number} className={`text-xs ${currentStep >= step.number ? 'text-cyan-300' : 'text-gray-500'}`}>
+            <button
+              key={step.number}
+              onClick={() => setCurrentStep(step.number)}
+              className={`text-xs transition-colors cursor-pointer hover:text-cyan-300 ${
+                currentStep >= step.number ? 'text-cyan-300' : 'text-gray-500'
+              }`}
+            >
               {step.title}
-            </div>
+            </button>
           ))}
         </div>
       </div>
 
-      {/* Credit Display */}
-      <div className="bg-emerald-500/20 border border-emerald-500/30 rounded-xl p-4 mb-8">
+      {/* Credit Display - Only show after sign-in */}
+      {userCredits !== undefined ? (
+        <div className="bg-emerald-500/20 border border-emerald-500/30 rounded-xl p-4 mb-8">
         <div className="flex items-center justify-between">
           <div>
             <span className="text-emerald-300 font-semibold">Available Credits: {userCredits}</span>
@@ -2061,6 +2072,31 @@ function PostJob() {
           </div>
         )}
       </div>
+      ) : (
+        <div className="bg-amber-500/20 border border-amber-500/30 rounded-xl p-4 mb-8">
+          <div className="text-center">
+            <div className="text-amber-400 text-2xl mb-3">🔐</div>
+            <h3 className="text-amber-300 font-semibold mb-2">Sign in to continue</h3>
+            <p className="text-amber-200 text-sm mb-4">
+              You need to sign in as an employer to post a job and see your available credits.
+            </p>
+            <div className="flex gap-4 justify-center">
+              <button
+                onClick={() => window.location.href = '/employer-auth'}
+                className="bg-amber-600 hover:bg-amber-700 text-white px-6 py-2 rounded-lg text-sm font-semibold transition-colors"
+              >
+                Sign In as Employer
+              </button>
+              <Link 
+                to="/pricing" 
+                className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2 rounded-lg text-sm font-semibold transition-colors"
+              >
+                View Pricing
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
 
       {!showPreview ? (
         <div className="bg-white/5 border border-white/10 rounded-2xl p-8">
@@ -2214,7 +2250,12 @@ function PostJob() {
               </button>
               <button
                 onClick={() => setCurrentStep(prev => Math.min(4, prev + 1))}
-                className="bg-gradient-to-r from-cyan-600 to-purple-700 hover:from-cyan-500 hover:to-purple-600 text-white px-6 py-2 rounded-lg"
+                disabled={userCredits === undefined}
+                className={`px-6 py-2 rounded-lg transition-all ${
+                  userCredits === undefined 
+                    ? 'bg-gray-600 text-gray-400 cursor-not-allowed' 
+                    : 'bg-gradient-to-r from-cyan-600 to-purple-700 hover:from-cyan-500 hover:to-purple-600 text-white'
+                }`}
               >
                 {currentStep === 4 ? 'Submit' : 'Next'}
               </button>
@@ -2275,9 +2316,14 @@ function PostJob() {
             </button>
             <button
               onClick={handleSubmit}
-              className="bg-gradient-to-r from-cyan-600 to-purple-700 hover:from-cyan-500 hover:to-purple-600 text-white px-8 py-2 rounded-lg"
+              disabled={userCredits === undefined}
+              className={`px-8 py-2 rounded-lg transition-all ${
+                userCredits === undefined 
+                  ? 'bg-gray-600 text-gray-400 cursor-not-allowed' 
+                  : 'bg-gradient-to-r from-cyan-600 to-purple-700 hover:from-cyan-500 hover:to-purple-600 text-white'
+              }`}
             >
-              Post Job (1 Credit)
+              {userCredits === undefined ? 'Sign In Required' : 'Post Job (1 Credit)'}
             </button>
           </div>
         </div>
