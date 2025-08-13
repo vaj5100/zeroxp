@@ -715,22 +715,7 @@ function Header() {
                 <Link 
                   to="/post-job" 
                   className="post-job-btn px-4 py-2 bg-gradient-to-r from-green-500 to-orange-500 text-white rounded-lg font-semibold hover:from-green-600 hover:to-orange-600 transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-green-500/25 focus:outline-none focus:ring-2 focus:ring-green-500/50 focus:ring-offset-2 focus:ring-offset-black"
-                  onClick={(e) => {
-                    // Add click animation
-                    const target = e.currentTarget;
-                    target.style.transform = 'scale(0.95)';
-                    target.style.transition = 'transform 0.1s ease';
-                    
-                    // Add ripple effect
-                    target.classList.add('ripple');
-                    
-                    // Reset after animation
-                    setTimeout(() => {
-                      target.style.transform = '';
-                      target.style.transition = '';
-                      target.classList.remove('ripple');
-                    }, 300);
-                  }}
+                  onClick={animateButton}
                 >
                   Post a Job
                 </Link>
@@ -878,22 +863,7 @@ function Header() {
                     to="/post-job" 
                     className="post-job-btn bg-gradient-to-r from-green-500 to-orange-500 text-white px-4 py-2 rounded-lg font-semibold hover:from-green-600 hover:to-orange-600 transition-all duration-300 text-left transform hover:scale-105 hover:shadow-lg hover:shadow-green-500/25 focus:outline-none focus:ring-2 focus:ring-green-500/50 focus:ring-offset-2 focus:ring-offset-black"
                     onClick={(e) => {
-                      // Add click animation
-                      const target = e.currentTarget;
-                      target.style.transform = 'scale(0.95)';
-                      target.style.transition = 'transform 0.1s ease';
-                      
-                      // Add ripple effect
-                      target.classList.add('ripple');
-                      
-                      // Reset after animation
-                      setTimeout(() => {
-                        target.style.transform = '';
-                        target.style.transition = '';
-                        target.classList.remove('ripple');
-                      }, 300);
-                      
-                      // Close mobile menu
+                      animateButton(e);
                       setIsMobileMenuOpen(false);
                     }}
                   >
@@ -2623,7 +2593,10 @@ function Pricing() {
               <span className="text-white text-sm">Basic support</span>
             </div>
           </div>
-          <button className="w-full bg-gradient-to-r from-cyan-600 to-purple-700 hover:from-cyan-500 hover:to-purple-600 text-white py-3 rounded-lg font-semibold transition-all">
+          <button 
+            className="animated-btn w-full bg-gradient-to-r from-cyan-600 to-purple-700 hover:from-cyan-500 hover:to-purple-600 text-white py-3 rounded-lg font-semibold transition-all transform hover:scale-105 hover:shadow-lg hover:shadow-cyan-500/25 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:ring-offset-2 focus:ring-offset-black"
+            onClick={animateButton}
+          >
             Get Started
           </button>
         </div>
@@ -2656,7 +2629,10 @@ function Pricing() {
               <span className="text-white text-sm">Priority support</span>
             </div>
           </div>
-          <button className="w-full bg-gradient-to-r from-cyan-600 to-purple-700 hover:from-cyan-500 hover:to-purple-600 text-white py-3 rounded-lg font-semibold transition-all">
+          <button 
+            className="animated-btn w-full bg-gradient-to-r from-cyan-600 to-purple-700 hover:from-cyan-500 hover:to-purple-600 text-white py-3 rounded-lg font-semibold transition-all transform hover:scale-105 hover:shadow-lg hover:shadow-cyan-500/25 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:ring-offset-2 focus:ring-offset-black"
+            onClick={animateButton}
+          >
             Choose Growth
           </button>
         </div>
@@ -2684,7 +2660,10 @@ function Pricing() {
               <span className="text-white text-sm">Advanced analytics</span>
             </div>
           </div>
-          <button className="w-full bg-gradient-to-r from-purple-600 to-cyan-700 hover:from-purple-500 hover:to-cyan-600 text-white py-3 rounded-lg font-semibold transition-all">
+          <button 
+            className="animated-btn w-full bg-gradient-to-r from-purple-600 to-cyan-700 hover:from-purple-500 hover:to-cyan-600 text-white py-3 rounded-lg font-semibold transition-all transform hover:scale-105 hover:shadow-lg hover:shadow-purple-500/25 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:ring-offset-2 focus:ring-offset-black"
+            onClick={animateButton}
+          >
             Choose Scale
           </button>
         </div>
@@ -2712,7 +2691,10 @@ function Pricing() {
               <span className="text-white text-sm">Dedicated support</span>
             </div>
           </div>
-          <button className="w-full bg-gradient-to-r from-emerald-600 to-purple-700 hover:from-emerald-500 hover:to-purple-600 text-white py-3 rounded-lg font-semibold transition-all">
+          <button 
+            className="animated-btn w-full bg-gradient-to-r from-emerald-600 to-purple-700 hover:from-emerald-500 hover:to-purple-600 text-white py-3 rounded-lg font-semibold transition-all transform hover:scale-105 hover:shadow-lg hover:shadow-emerald-500/25 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:ring-offset-2 focus:ring-offset-black"
+            onClick={animateButton}
+          >
             Choose Enterprise
           </button>
         </div>
@@ -3832,6 +3814,25 @@ export default function App() {
     </BrowserRouter>
   );
 }
+
+// Reusable button animation function
+const animateButton = (e) => {
+  const target = e.currentTarget;
+  
+  // Add click animation
+  target.style.transform = 'scale(0.95)';
+  target.style.transition = 'transform 0.1s ease';
+  
+  // Add ripple effect
+  target.classList.add('ripple');
+  
+  // Reset after animation
+  setTimeout(() => {
+    target.style.transform = '';
+    target.style.transition = '';
+    target.classList.remove('ripple');
+  }, 300);
+};
 
 // Scroll observer hook
 function useScrollAnimation() {
