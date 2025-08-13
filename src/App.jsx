@@ -3127,9 +3127,19 @@ function Guides() {
 
         {/* XP Guide Section */}
         <div className="mb-12">
-          <h2 className="text-3xl font-bold mb-8 text-center">Understanding the XP System</h2>
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold mb-4">Understanding the XP System</h2>
+            <p className="text-gray-300 mb-4">Learn how the XP system works and how to maximize your career growth</p>
+            <button 
+              onClick={() => navigate('/xp-guide')}
+              className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-cyan-500 to-purple-600 text-white rounded-lg hover:from-cyan-600 hover:to-purple-700 transition-all font-semibold"
+            >
+              <Zap className="w-5 h-5 mr-2" />
+              View Full XP Guide
+            </button>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div className="bg-white/5 border border-white/10 rounded-xl p-6">
+            <div className="bg-white/5 border border-white/10 rounded-xl p-6 hover:border-cyan-500/30 transition-all cursor-pointer" onClick={() => navigate('/xp-guide')}>
               <div className="w-12 h-12 bg-gradient-to-r from-cyan-500 to-purple-600 rounded-lg flex items-center justify-center mb-4">
                 <Zap className="w-6 h-6 text-white" />
               </div>
@@ -3143,9 +3153,12 @@ function Guides() {
                 • Complete profile: +50 XP<br/>
                 • Upload video CV: +200 XP
               </div>
+              <div className="mt-4 text-cyan-400 text-sm font-medium flex items-center">
+                Click to learn more →
+              </div>
             </div>
 
-            <div className="bg-white/5 border border-white/10 rounded-xl p-6">
+            <div className="bg-white/5 border border-white/10 rounded-xl p-6 hover:border-purple-500/30 transition-all cursor-pointer" onClick={() => navigate('/xp-guide')}>
               <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-cyan-600 rounded-lg flex items-center justify-center mb-4">
                 <TrendingUp className="w-6 h-6 text-white" />
               </div>
@@ -3159,9 +3172,12 @@ function Guides() {
                 • Level 5: Top-tier priority<br/>
                 • Elite status benefits
               </div>
+              <div className="mt-4 text-purple-400 text-sm font-medium flex items-center">
+                Click to learn more →
+              </div>
             </div>
 
-            <div className="bg-white/5 border border-white/10 rounded-xl p-6">
+            <div className="bg-white/5 border border-white/10 rounded-xl p-6 hover:border-green-500/30 transition-all cursor-pointer" onClick={() => navigate('/xp-guide')}>
               <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-blue-600 rounded-lg flex items-center justify-center mb-4">
                 <Users className="w-6 h-6 text-white" />
               </div>
@@ -3174,6 +3190,9 @@ function Guides() {
                 • Level 3: Priority placement<br/>
                 • Level 5: Top-tier priority<br/>
                 • Elite status benefits
+              </div>
+              <div className="mt-4 text-green-400 text-sm font-medium flex items-center">
+                Click to learn more →
               </div>
             </div>
           </div>
