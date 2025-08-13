@@ -714,7 +714,23 @@ function Header() {
 
                 <Link 
                   to="/post-job" 
-                  className="post-job-btn px-4 py-2 bg-gradient-to-r from-green-500 to-orange-500 text-white rounded-lg font-semibold hover:from-green-600 hover:to-orange-600 transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-green-500/25 active:scale-95 focus:outline-none focus:ring-2 focus:ring-green-500/50 focus:ring-offset-2 focus:ring-offset-black"
+                  className="post-job-btn px-4 py-2 bg-gradient-to-r from-green-500 to-orange-500 text-white rounded-lg font-semibold hover:from-green-600 hover:to-orange-600 transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-green-500/25 focus:outline-none focus:ring-2 focus:ring-green-500/50 focus:ring-offset-2 focus:ring-offset-black"
+                  onClick={(e) => {
+                    // Add click animation
+                    const target = e.currentTarget;
+                    target.style.transform = 'scale(0.95)';
+                    target.style.transition = 'transform 0.1s ease';
+                    
+                    // Add ripple effect
+                    target.classList.add('ripple');
+                    
+                    // Reset after animation
+                    setTimeout(() => {
+                      target.style.transform = '';
+                      target.style.transition = '';
+                      target.classList.remove('ripple');
+                    }, 300);
+                  }}
                 >
                   Post a Job
                 </Link>
@@ -860,8 +876,26 @@ function Header() {
 
                   <Link 
                     to="/post-job" 
-                    className="post-job-btn bg-gradient-to-r from-green-500 to-orange-500 text-white px-4 py-2 rounded-lg font-semibold hover:from-green-600 hover:to-orange-600 transition-all duration-300 text-left transform hover:scale-105 hover:shadow-lg hover:shadow-green-500/25 active:scale-95 focus:outline-none focus:ring-2 focus:ring-green-500/50 focus:ring-offset-2 focus:ring-offset-black"
-                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="post-job-btn bg-gradient-to-r from-green-500 to-orange-500 text-white px-4 py-2 rounded-lg font-semibold hover:from-green-600 hover:to-orange-600 transition-all duration-300 text-left transform hover:scale-105 hover:shadow-lg hover:shadow-green-500/25 focus:outline-none focus:ring-2 focus:ring-green-500/50 focus:ring-offset-2 focus:ring-offset-black"
+                    onClick={(e) => {
+                      // Add click animation
+                      const target = e.currentTarget;
+                      target.style.transform = 'scale(0.95)';
+                      target.style.transition = 'transform 0.1s ease';
+                      
+                      // Add ripple effect
+                      target.classList.add('ripple');
+                      
+                      // Reset after animation
+                      setTimeout(() => {
+                        target.style.transform = '';
+                        target.style.transition = '';
+                        target.classList.remove('ripple');
+                      }, 300);
+                      
+                      // Close mobile menu
+                      setIsMobileMenuOpen(false);
+                    }}
                   >
                     Post a Job
                   </Link>
