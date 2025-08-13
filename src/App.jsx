@@ -3146,34 +3146,34 @@ function EmployerWelcome() {
 
   return (
     <div className="relative overflow-hidden">
-      <div ref={heroRef} className={`relative px-6 py-24 sm:py-32 lg:px-8 ${heroVisible ? 'animate-on-scroll animate-in' : 'animate-on-scroll'}`}>
+      <div ref={heroRef} className={`relative px-6 py-24 sm:py-32 lg:px-8 animate-on-scroll ${heroVisible ? 'animate-in' : ''}`}>
         <div className="mx-auto max-w-4xl text-center">
-          <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-7xl mb-8 cyber-text">
+          <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-7xl mb-8 cyber-text animate-on-scroll animate-in">
             Welcome, <span className="bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">Employers</span>
           </h1>
-          <p className="text-xl leading-8 text-gray-300 max-w-3xl mx-auto mb-12">
+          <p className="text-xl leading-8 text-gray-300 max-w-3xl mx-auto mb-12 animate-on-scroll animate-in">
             Find motivated entry-level talent through our gamified platform. Post jobs, discover candidates, and build your team with ZeroXP.
           </p>
           
           <div className="grid md:grid-cols-3 gap-8 mb-12">
-            <div className="bg-white/5 border border-white/10 rounded-2xl p-6 shadow-neon">
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-6 shadow-neon animate-on-scroll-scale animate-in">
               <div className="text-3xl mb-4">📝</div>
               <h3 className="text-xl font-bold text-white mb-2">Post Jobs</h3>
               <p className="text-gray-300 text-sm">Create compelling job listings that attract motivated entry-level candidates</p>
           </div>
-            <div className="bg-white/5 border border-white/10 rounded-2xl p-6 shadow-neon">
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-6 shadow-neon animate-on-scroll-scale animate-in">
               <div className="text-3xl mb-4">🎯</div>
               <h3 className="text-xl font-bold text-white mb-2">Find Talent</h3>
               <p className="text-gray-300 text-sm">Discover candidates ranked by XP and motivation level</p>
             </div>
-            <div className="bg-white/5 border border-white/10 rounded-2xl p-6 shadow-neon">
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-6 shadow-neon animate-on-scroll-scale animate-in">
               <div className="text-3xl mb-4">⚡</div>
               <h3 className="text-xl font-bold text-white mb-2">Hire Faster</h3>
               <p className="text-gray-300 text-sm">Connect with pre-vetted candidates ready to contribute</p>
             </div>
           </div>
 
-          <div ref={ctaRef} className={`flex flex-col md:flex-row items-center justify-center gap-6 ${ctaVisible ? 'animate-on-scroll-scale animate-in' : 'animate-on-scroll-scale'}`}>
+          <div ref={ctaRef} className={`flex flex-col md:flex-row items-center justify-center gap-6 animate-on-scroll-scale ${ctaVisible ? 'animate-in' : ''}`}>
             <button onClick={(e) => {
               animateButton(e);
               setShowAuthModal(true);
@@ -3191,10 +3191,10 @@ function EmployerWelcome() {
       </div>
 
       {/* Features Section */}
-      <div ref={featuresRef} className={`max-w-7xl mx-auto px-6 pb-24 ${featuresVisible ? 'animate-on-scroll-scale animate-in' : 'animate-on-scroll-scale'}`}>
-        <h2 className="text-3xl font-bold text-white text-center mb-12">Why Choose ZeroXP?</h2>
+      <div ref={featuresRef} className={`max-w-7xl mx-auto px-6 pb-24 animate-on-scroll-scale ${featuresVisible ? 'animate-in' : ''}`}>
+        <h2 className="text-3xl font-bold text-white text-center mb-12 animate-on-scroll animate-in">Why Choose ZeroXP?</h2>
         <div className="grid md:grid-cols-2 gap-8">
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-8 shadow-neon">
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-8 shadow-neon animate-on-scroll-scale animate-in">
             <h3 className="text-2xl font-bold text-white mb-4">🎮 Gamified Candidate Discovery</h3>
             <p className="text-gray-300 mb-4">
               Our unique XP system rewards candidates for taking action. Higher XP candidates are more motivated, 
@@ -3207,7 +3207,7 @@ function EmployerWelcome() {
             </ul>
           </div>
           
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-8 shadow-neon">
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-8 shadow-neon animate-on-scroll-scale animate-in">
             <h3 className="text-2xl font-bold text-white mb-4">💼 Entry-Level Focus</h3>
             <p className="text-gray-300 mb-4">
               We specialize in entry-level positions, helping you find candidates who are eager to learn, 
@@ -3220,7 +3220,7 @@ function EmployerWelcome() {
             </ul>
           </div>
           
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-8 shadow-neon">
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-8 shadow-neon animate-on-scroll-scale animate-in">
             <h3 className="text-2xl font-bold text-white mb-4">🚀 Simple & Effective</h3>
             <p className="text-gray-300 mb-4">
               Post jobs, browse candidates, and make connections. Our platform is designed to streamline 
@@ -3233,7 +3233,7 @@ function EmployerWelcome() {
             </ul>
           </div>
           
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-8 shadow-neon">
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-8 shadow-neon animate-on-scroll-scale animate-in">
             <h3 className="text-2xl font-bold text-white mb-4">💰 Transparent Pricing</h3>
             <p className="text-gray-300 mb-4">
               Simple credit-based system with no hidden fees. Pay for what you use and scale as you grow.
@@ -3248,25 +3248,25 @@ function EmployerWelcome() {
       </div>
 
       {/* How It Works Section */}
-      <div ref={howItWorksRef} className={`max-w-7xl mx-auto px-6 pb-24 ${howItWorksVisible ? 'animate-on-scroll-scale animate-in' : 'animate-on-scroll-scale'}`}>
+      <div ref={howItWorksRef} className={`max-w-7xl mx-auto px-6 pb-24 animate-on-scroll-scale ${howItWorksVisible ? 'animate-in' : ''}`}>
         <div className="bg-gradient-to-r from-purple-500/10 to-pink-500/10 border border-purple-500/30 rounded-2xl p-8">
-          <h2 className="text-3xl font-bold text-white mb-8 text-center">How It Works</h2>
+          <h2 className="text-3xl font-bold text-white mb-8 text-center animate-on-scroll animate-in">How It Works</h2>
           <div className="grid md:grid-cols-3 gap-8">
-            <div className="text-center">
+            <div className="text-center animate-on-scroll-scale animate-in">
               <div className="w-16 h-16 bg-purple-500/20 border border-purple-500/30 rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-2xl font-bold text-purple-300">1</span>
               </div>
               <h3 className="text-xl font-semibold text-white mb-2">Post Jobs</h3>
               <p className="text-gray-400">Create compelling job listings with our simple form</p>
             </div>
-            <div className="text-center">
+            <div className="text-center animate-on-scroll-scale animate-in">
               <div className="w-16 h-16 bg-pink-500/20 border border-pink-500/30 rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-2xl font-bold text-pink-300">2</span>
               </div>
               <h3 className="text-xl font-semibold text-white mb-2">Review Candidates</h3>
               <p className="text-gray-400">Browse applications ranked by XP and motivation</p>
             </div>
-            <div className="text-center">
+            <div className="text-center animate-on-scroll-scale animate-in">
               <div className="w-16 h-16 bg-cyan-500/20 border border-cyan-500/30 rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-2xl font-bold text-cyan-300">3</span>
               </div>
