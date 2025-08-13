@@ -557,23 +557,12 @@ function Header() {
                     </Link>
                   </div>
                 </div>
-                <div className="relative group">
-                  <button className="text-gray-400 hover:text-gray-300 transition-colors text-sm py-2 flex items-center">
-                    For Employers
-                    <ChevronDown className="w-4 h-4 ml-1 group-hover:rotate-180 transition-transform" />
-                  </button>
-                  <div className="absolute top-full left-0 bg-[#0b0e1a] border border-white/10 rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 min-w-[200px] z-50">
-                    <button
-                      onClick={() => handleLogin('employer')}
-                      className="block w-full text-left px-4 py-3 text-gray-300 hover:text-white hover:bg-white/5 transition-colors rounded-t-lg"
-                    >
-                      Sign In
-                    </button>
-                    <Link to="/pricing" className="block px-4 py-3 text-gray-300 hover:text-white hover:bg-white/5 transition-colors rounded-b-lg">
-                      Pricing
-                    </Link>
-                  </div>
-                </div>
+                <Link 
+                  to="/post-job" 
+                  className="px-4 py-2 bg-gradient-to-r from-green-500 to-orange-500 text-white rounded-lg font-semibold hover:from-green-600 hover:to-orange-600 transition-all duration-300"
+                >
+                  Post a Job
+                </Link>
                 <button
                   onClick={() => handleLogin('jobseeker')}
                   className="px-4 py-2 bg-gradient-to-r from-cyan-500 to-purple-600 text-white rounded-lg font-semibold hover:from-cyan-600 hover:to-purple-700 transition-all duration-300"
@@ -672,22 +661,13 @@ function Header() {
                       Career Advice
                     </Link>
                   </div>
-                  <div className="px-4 py-2">
-                    <div className="text-gray-400 font-medium mb-2">For Employers</div>
-                    <button
-                      onClick={() => handleLogin('employer')}
-                      className="block w-full text-left text-gray-500 hover:text-gray-400 transition-colors py-2 px-4 rounded-lg hover:bg-white/5 text-sm ml-4"
-                    >
-                      Sign In
-                    </button>
-                    <Link 
-                      to="/pricing" 
-                      className="block text-gray-500 hover:text-gray-400 transition-colors py-2 px-4 rounded-lg hover:bg-white/5 text-sm ml-4"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                    >
-                      Pricing
-                    </Link>
-                  </div>
+                  <Link 
+                    to="/post-job" 
+                    className="bg-gradient-to-r from-green-500 to-orange-500 text-white px-4 py-2 rounded-lg font-semibold hover:from-green-600 hover:to-orange-600 transition-all duration-300 text-left"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Post a Job
+                  </Link>
                   <button
                     onClick={() => handleLogin('jobseeker')}
                     className="bg-gradient-to-r from-cyan-500 to-purple-600 text-white px-4 py-2 rounded-lg font-semibold hover:from-cyan-600 hover:to-purple-700 transition-all duration-300 text-left"
