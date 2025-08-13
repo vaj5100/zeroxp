@@ -714,7 +714,7 @@ function Header() {
 
                 <Link 
                   to="/post-job" 
-                  className="px-4 py-2 bg-gradient-to-r from-green-500 to-orange-500 text-white rounded-lg font-semibold hover:from-green-600 hover:to-orange-600 transition-all duration-300"
+                  className="post-job-btn px-4 py-2 bg-gradient-to-r from-green-500 to-orange-500 text-white rounded-lg font-semibold hover:from-green-600 hover:to-orange-600 transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-green-500/25 active:scale-95 focus:outline-none focus:ring-2 focus:ring-green-500/50 focus:ring-offset-2 focus:ring-offset-black"
                 >
                   Post a Job
                 </Link>
@@ -750,7 +750,7 @@ function Header() {
                   )}
                 {userType === 'employer' && (
                   <>
-                    <Link to="/post-job" className="text-gray-300 hover:text-white transition-colors py-2">Post Job</Link>
+                    <Link to="/post-job" className="text-gray-300 hover:text-white transition-colors py-2 hover:scale-105 transform transition-transform duration-200">Post Job</Link>
                     <Link to="/employer-hub" className="text-gray-300 hover:text-white transition-colors py-2">Employer Hub</Link>
                     <Link to="/pricing" className="text-emerald-400 hover:text-emerald-300 transition-colors py-2">Pricing</Link>
                     <span className="text-emerald-300 text-sm px-2 py-1 bg-emerald-500/10 rounded">
@@ -860,7 +860,7 @@ function Header() {
 
                   <Link 
                     to="/post-job" 
-                    className="bg-gradient-to-r from-green-500 to-orange-500 text-white px-4 py-2 rounded-lg font-semibold hover:from-green-600 hover:to-orange-600 transition-all duration-300 text-left"
+                    className="post-job-btn bg-gradient-to-r from-green-500 to-orange-500 text-white px-4 py-2 rounded-lg font-semibold hover:from-green-600 hover:to-orange-600 transition-all duration-300 text-left transform hover:scale-105 hover:shadow-lg hover:shadow-green-500/25 active:scale-95 focus:outline-none focus:ring-2 focus:ring-green-500/50 focus:ring-offset-2 focus:ring-offset-black"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     Post a Job
@@ -914,7 +914,7 @@ function Header() {
                     <>
                       <Link 
                         to="/post-job" 
-                        className="text-gray-300 hover:text-white transition-colors py-2 px-4 rounded-lg hover:bg-white/5"
+                        className="text-gray-300 hover:text-white transition-colors py-2 px-4 rounded-lg hover:bg-white/5 hover:scale-105 transform transition-transform duration-200"
                         onClick={() => setIsMobileMenuOpen(false)}
                       >
                         Post Job

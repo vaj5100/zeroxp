@@ -87,6 +87,45 @@
     background: linear-gradient(90deg, transparent, rgba(0, 212, 255, 0.3), transparent);
     animation: scan 4s linear infinite;
   }
+  
+  /* Post a Job button animations */
+  .post-job-btn {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .post-job-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    transition: left 0.5s ease;
+  }
+  
+  .post-job-btn:hover::before {
+    left: 100%;
+  }
+  
+  .post-job-btn:active {
+    transform: scale(0.95);
+  }
+  
+  /* Pulse animation for attention */
+  .pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite alternate;
+  }
+  
+  @keyframes pulse-glow {
+    0% {
+      box-shadow: 0 0 5px rgba(34, 197, 94, 0.3);
+    }
+    100% {
+      box-shadow: 0 0 20px rgba(34, 197, 94, 0.6), 0 0 30px rgba(34, 197, 94, 0.4);
+    }
+  }
 }
 
 /* Custom select styling for consistent alignment */
