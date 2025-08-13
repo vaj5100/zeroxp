@@ -453,6 +453,20 @@ function AppProvider({ children }) {
     setShowEmployerAuthModal(false);
     
     console.log('Login successful:', { type, email, credits: user.credits });
+    
+    // Redirect to appropriate welcome page
+    if (type === 'jobseeker') {
+      // Use setTimeout to ensure state is updated before navigation
+      setTimeout(() => {
+        window.location.href = '/job-seeker-welcome';
+      }, 100);
+    } else if (type === 'employer') {
+      // Use setTimeout to ensure state is updated before navigation
+      setTimeout(() => {
+        window.location.href = '/employer-welcome';
+      }, 100);
+    }
+    
     return true;
   };
 
