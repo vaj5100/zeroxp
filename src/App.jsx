@@ -712,6 +712,13 @@ function Header() {
                 </div>
 
 
+                <Link 
+                  to="/post-job" 
+                  className="px-4 py-2 bg-gradient-to-r from-green-500 to-orange-500 text-white rounded-lg font-semibold hover:from-green-600 hover:to-orange-600 transition-all duration-300"
+                >
+                  Post a Job
+                </Link>
+
                 <button
                   onClick={() => handleLogin('jobseeker')}
                   className="px-4 py-2 bg-gradient-to-r from-cyan-500 to-purple-600 text-white rounded-lg font-semibold hover:from-cyan-600 hover:to-purple-700 transition-all duration-300"
@@ -851,6 +858,13 @@ function Header() {
                     </Link>
                   </div>
 
+                  <Link 
+                    to="/post-job" 
+                    className="bg-gradient-to-r from-green-500 to-orange-500 text-white px-4 py-2 rounded-lg font-semibold hover:from-green-600 hover:to-orange-600 transition-all duration-300 text-left"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Post a Job
+                  </Link>
 
                   <button
                     onClick={() => handleLogin('jobseeker')}
