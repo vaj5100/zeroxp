@@ -543,8 +543,20 @@ function Header() {
               <>
                                   <Link to="/job-seeker-welcome" className="text-gray-300 hover:text-white transition-colors py-2">Welcome</Link>
                   <Link to="/jobs" className="text-gray-300 hover:text-white transition-colors py-2">Jobs</Link>
-                  <Link to="/xp-guide" className="text-gray-300 hover:text-white transition-colors py-2">XP Guide</Link>
-                  <Link to="/guides" className="text-gray-300 hover:text-white transition-colors py-2">Guides</Link>
+                  <div className="relative group">
+                    <button className="text-gray-300 hover:text-white transition-colors py-2 flex items-center">
+                      Guides
+                      <ChevronDown className="w-4 h-4 ml-1 group-hover:rotate-180 transition-transform" />
+                    </button>
+                    <div className="absolute top-full left-0 bg-[#0b0e1a] border border-white/10 rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 min-w-[200px] z-50">
+                      <Link to="/xp-guide" className="block px-4 py-3 text-gray-300 hover:text-white hover:bg-white/5 transition-colors rounded-t-lg">
+                        XP Guide
+                      </Link>
+                      <Link to="/guides" className="block px-4 py-3 text-gray-300 hover:text-white hover:bg-white/5 transition-colors rounded-b-lg">
+                        Career Advice
+                      </Link>
+                    </div>
+                  </div>
                   <Link to="/pricing" className="text-gray-300 hover:text-white transition-colors py-2">Pricing</Link>
                 <button
                   onClick={() => handleLogin('employer')}
@@ -564,8 +576,20 @@ function Header() {
                                   {userType === 'jobseeker' && (
                     <>
                       <Link to="/jobs" className="text-gray-300 hover:text-white transition-colors py-2">Jobs</Link>
-                      <Link to="/xp-guide" className="text-gray-300 hover:text-white transition-colors py-2">XP Guide</Link>
-                      <Link to="/guides" className="text-gray-300 hover:text-white transition-colors py-2">Guides</Link>
+                      <div className="relative group">
+                        <button className="text-gray-300 hover:text-white transition-colors py-2 flex items-center">
+                          Guides
+                          <ChevronDown className="w-4 h-4 ml-1 group-hover:rotate-180 transition-transform" />
+                        </button>
+                        <div className="absolute top-full left-0 bg-[#0b0e1a] border border-white/10 rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 min-w-[200px] z-50">
+                          <Link to="/xp-guide" className="block px-4 py-3 text-gray-300 hover:text-white hover:bg-white/5 transition-colors rounded-t-lg">
+                            XP Guide
+                          </Link>
+                          <Link to="/guides" className="block px-4 py-3 text-gray-300 hover:text-white hover:bg-white/5 transition-colors rounded-b-lg">
+                            Career Advice
+                          </Link>
+                        </div>
+                      </div>
                       <Link to="/my-xp" className="text-gray-300 hover:text-white transition-colors py-2">My XP</Link>
                     </>
                   )}
@@ -621,20 +645,23 @@ function Header() {
                   >
                     Jobs
                   </Link>
-                  <Link 
-                    to="/xp-guide" 
-                    className="text-gray-300 hover:text-white transition-colors py-2 px-4 rounded-lg hover:bg-white/5"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    XP Guide
-                  </Link>
-                  <Link 
-                    to="/guides" 
-                    className="text-gray-300 hover:text-white transition-colors py-2 px-4 rounded-lg hover:bg-white/5"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    Guides
-                  </Link>
+                  <div className="px-4 py-2">
+                    <div className="text-gray-300 font-medium mb-2">Guides</div>
+                    <Link 
+                      to="/xp-guide" 
+                      className="block text-gray-400 hover:text-white transition-colors py-2 px-4 rounded-lg hover:bg-white/5 ml-4"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      XP Guide
+                    </Link>
+                    <Link 
+                      to="/guides" 
+                      className="block text-gray-400 hover:text-white transition-colors py-2 px-4 rounded-lg hover:bg-white/5 ml-4"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      Career Advice
+                    </Link>
+                  </div>
                   <Link 
                     to="/pricing" 
                     className="text-gray-300 hover:text-white transition-colors py-2 px-4 rounded-lg hover:bg-white/5"
@@ -666,20 +693,23 @@ function Header() {
                       >
                         Jobs
                       </Link>
-                      <Link 
-                        to="/xp-guide" 
-                        className="text-gray-300 hover:text-white transition-colors py-2 px-4 rounded-lg hover:bg-white/5"
-                        onClick={() => setIsMobileMenuOpen(false)}
-                      >
-                        XP Guide
-                      </Link>
-                      <Link 
-                        to="/guides" 
-                        className="text-gray-300 hover:text-white transition-colors py-2 px-4 rounded-lg hover:bg-white/5"
-                        onClick={() => setIsMobileMenuOpen(false)}
-                      >
-                        Guides
-                      </Link>
+                      <div className="px-4 py-2">
+                        <div className="text-gray-300 font-medium mb-2">Guides</div>
+                        <Link 
+                          to="/xp-guide" 
+                          className="block text-gray-400 hover:text-white transition-colors py-2 px-4 rounded-lg hover:bg-white/5 ml-4"
+                          onClick={() => setIsMobileMenuOpen(false)}
+                        >
+                          XP Guide
+                        </Link>
+                        <Link 
+                          to="/guides" 
+                          className="block text-gray-400 hover:text-white transition-colors py-2 px-4 rounded-lg hover:bg-white/5 ml-4"
+                          onClick={() => setIsMobileMenuOpen(false)}
+                        >
+                          Career Advice
+                        </Link>
+                      </div>
                       <Link 
                         to="/my-xp" 
                         className="text-gray-300 hover:text-white transition-colors py-2 px-4 rounded-lg hover:bg-white/5"
